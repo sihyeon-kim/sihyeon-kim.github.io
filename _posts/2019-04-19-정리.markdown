@@ -1,0 +1,42 @@
+---
+layout: post
+title: "정리"
+date: 2019-04-19 08:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+from init process(c/c++) to zygote(java)  
+
+* init.c  
+  * parse_config_file("/init.rc");    
+  * action_for_each_trigger("boot", action_add_queue_tail);   
+  * drain_action_queue();    
+    * do_class_start()   
+    * service_for_each_class(args[1], service_start_if_not_disabled);   
+    * service_start(svc);    
+      * fork()    
+      * execve("/system/bin/app_process", , )   
+      
+* app_main.cpp   
+  * AppRuntime runtime    
+  * runtime.start("com.android.internal.os.ZygoteInit", startSystemServer);    
+    * JNI_CreateJavaVM()    
+    * FindClass(ClassName)    
+    * GetStaticMethodID()     
+    * CallStaticVoidMethod()       
+
+* ZygoteInit.java    
+  * main()
+
+```gist
+https://gist.github.com/sihyeon-kim/48b61f572460f0abbdeb36770886dcfe.js
+https://gist.github.com/48b61f572460f0abbdeb36770886dcfe.git
+https://gist.github.com/sihyeon-kim/48b61f572460f0abbdeb36770886dcfe
+git@gist.github.com:48b61f572460f0abbdeb36770886dcfe.git
+```
+
+git@gist.github.com:48b61f572460f0abbdeb36770886dcfe.git  
+
+
+{% gist 48b61f572460f0abbdeb36770886dcfe %}

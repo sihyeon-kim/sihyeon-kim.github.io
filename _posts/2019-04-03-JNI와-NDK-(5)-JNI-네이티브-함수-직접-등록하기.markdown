@@ -1,0 +1,458 @@
+---
+layout: post
+title: "JNI와 NDK (5) JNI 네이티브 함수 직접 등록하기"
+date: 2019-04-03 17:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+최종 수정일 : 2019-04-03
+
+# JNI 네이티브 함수 직접 등록하기  
+- 네이티브 메서드를 포함한 자바 프로그램을 실행할 때(4.2 예제 프로그램)  
+1. System.loadLibrary() 메소드를 이용 -> 네이티브 메서드의 실제 구현이 포함된 C/C++ 라이브러리를 메모리 상에 로드  
+2. 자바 가상 머신은 로드된 라이브러리의 함수 심볼을 검색 -> 자바에서 선언된 네이티브 메서드의 시그너처와 일치하는 JNI 네이티브 함수 실볼을 찾음 -> 네이티브 메서드와 실제 구현된 JNI 네이티브 함수를 매핑  
+
+- 안드로이드 프레임워크처럼 네이티브 메서드가 많은 경우  
+-> 라이브러리를 로딩하고 매핑하는 작업은 성능 저하의 원인이 된다.  
+-> 이런 문제를 해결하기 위해 `RegisterNatives()`라는 JNI 함수 제공   
+
+- `RegisterNatives()` JNI 함수  
+프로그래머가 직접 JNI 네이티브 함수를 자바 클래스의 네이티브 메서드에 매핑 -> 자바 가상 머신은 매핑 과정을 생략할 수 있어 로딩 속도를 향상시킬 수 있다.  
+JNI 네이티브 함수 이름을 JNI 지원 가능한 네이밍 룰에 맞출 필요가 없다. 아무 함수 이름이나 네이티브 메서드로 연결할 수 있다.  
+
+- System.loadLibrary() 메서드의 동작 방식  
+1. 자바 코드에서 System.loadLibrar() 메서드 호출  
+2. 자바 가상 머신은 주어진 이름의 공유 라이브러리를 로드  
+3. 자바 가상 머신은 로드한 라이브러리 내의 함수 심볼을 검색해 JNI_OnLoad() 함수가 구현돼 있는지 확인  
+  3-1. 라이브러리에 JNI_OnLoad() 함수가 포함돼 있으면 자동으로 함수를 호출  
+  3-2. 라이브러리에 JNI_OnLoad() 함수가 구현돼 있지 않다면 자바 가상 머신은 네이티브 메서드와 라이브러리 내의 JNI 네이티브 함수의 심볼을 비교해 매핑(4장 2절 예제 프로그램)  
+  
+- JNI_OnLoad() 함수 return value : jni version  
+
+- 자바 가상 머신 대신 프로그래머가 네이티브 메서드와 JNI 네이티브 함수를 매핑하려면  
+라이브러리를 로딩할 때 자동으로 호출되는 함수 JNI_OnLoad() 안에 RegisterNatives() 함수를 이용해 매핑  
+
+---
+
+### 예제 프로그램  
+네이티브 라이브러리 로드 시에 JNI 네이티브 함수 등록하기  
+JNI 네이티브 함수가 포함돼 있는 라이브러리에 JNI_OnLoad() 함수를 추가하고 이 함수에서 RegisterNatives() 함수를 호출해서 매핑을 진행  
+
+- hellojnimap.cpp 소스 코드  
+
+![](/assets/jni-4.5-01.png)  
+
+![](/assets/jni-4.5-02.png)  
+
+#### (1) `#inlucde "jni.h"`  
+JNI 네이티브 함수 구현을 위한 헤더 파일  
+각종 JNI 관련 자료 구조, JNI 함수, 매크로 상수 등이 정의  
+
+#### (2) JNI 네이티브 함수 원형 선언  
+RegisterNatives() 함수를 이용해서 매핑할 때는 JNI 네이밍 룰에 맞출 필요가 없음  
+공통 매개 변수는 기존 방식과 동일하게 지정  
+
+#### (3) JNI 버전을 확인하는 부분  
+자바 가상 머신이 JNI 1.4 버전을 지원하는지 여부를 GetEnv() 호출 API를 통해 확인  
+JNI 1.4 버전이 맞으면 JNI_VERSION_1_4 매크로 상수를 반환  
+버전이 다르면 JNI_ERR 오류를 반환  
+GetEnv() 함수 호출 후 env에 JNI 인터페이스 포인터를 반환 -> JNI_OnLoad() 함수에서도 FindClass()나 RegisterNatives() 같은 JNI 함수 이용 가능  
+
+#### (4)  
+JNI 네이티브 함수를 연결하기 위해 HelloJNI 클래스를 로딩하고 레퍼런스 값을 저장  
+
+#### (5) 네이티브 메서드와 JNI 네이티브 함수를 매핑   
+매핑할 정보를 JNINativeMethod 구조체 배열을 이용해서 정의한 다음 RegisterNatives() 함수를 호출  
+- JNINativeMethod 구조체  
+```
+typedef struc {
+  char *name; // 네이티브 메서드 이름
+  char *signature; // 네이티비 메서드 시그너처
+  void *fnPtr; // 네이티브 메서드와 매핑할 JNI 네이티브 함수 포인터
+} JNINativeMethod
+```
+매핑 정보를 RegisterNatives() 함수의 인자로 넘겨준다.  
+```
+env->RegisterNatives(cls, nm, 2);
+```
+
+---  
+---  
+---   
+
+
+# 안드로이드에서의 활용 예  
+# System Server, app process  
+### 1. System Server : JNI_OnLoad에서 JNI 네이티브 함수를 등록하기  
+
+- System Server(시스템 서버) : 안드로이드가 로딩될 때 각종 서비스를 실행하는 역할  
+안드로이드 부팅 시에 JNI로 매핑될 다양한 네이티브 라이브러리를 로딩  
+
+#### (1) 안드로이드 프레임워크의 System Server 프로그램에서 android_servers 라이브러리를 로딩하는 부분   
+```
+// android / platform / frameworks / base / 7d276c3 / . / services / java / com / android / server / SystemServer.java
+
+// 생략
+
+public class SystemServer
+{
+    // 생략
+  
+    /**
+     * This method is called from Zygote to initialize the system. This will cause the native
+     * services (SurfaceFlinger, AudioFlinger, etc..) to be started. After that it will call back
+     * up into init2() to start the Android services.
+     */
+    native public static void init1(String[] args);
+    
+    public static void main(String[] args) {
+
+        // 생략
+        
+        System.loadLibrary("android_servers");
+        init1(args);
+    } 
+    
+    //생략
+}
+```
+android_servers라는 이름의 라이브러리를 로딩  
+안드로이드는 리눅스 기반이므로 로드하는 라이브러리 이름은 libandroid_servers.so   
+
+
+#### (2) android_servers 라이브러리 빌드를 위한 make 파일  
+LOCAL_SRC_FILES 변수에 리스트로 들어 있는 각 cpp 소스 파일들이 LOCAL_MODULE 변수에 정의된 libandroid_servers 라이브러리를 구성  
+
+```
+// android / platform / frameworks / base / refs/heads/froyo / . / services / jni / Android.mk
+
+LOCAL_PATH:= $(call my-dir)
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES:= \
+    com_android_server_AlarmManagerService.cpp \
+    com_android_server_BatteryService.cpp \
+    com_android_server_KeyInputQueue.cpp \
+    com_android_server_LightsService.cpp \
+    com_android_server_SensorService.cpp \
+    com_android_server_SystemServer.cpp \
+    com_android_server_VibratorService.cpp \
+    onload.cpp
+    
+LOCAL_C_INCLUDES += \
+	$(JNI_H_INCLUDE)
+  
+LOCAL_SHARED_LIBRARIES := \
+	libcutils \
+	libhardware \
+	libhardware_legacy \
+	libnativehelper \
+    libsystem_server \
+	libutils \
+	libui
+  
+ifeq ($(TARGET_SIMULATOR),true)
+ifeq ($(TARGET_OS),linux)
+ifeq ($(TARGET_ARCH),x86)
+LOCAL_LDLIBS += -lpthread -ldl -lrt
+endif
+endif
+endif
+
+ifeq ($(WITH_MALLOC_LEAK_CHECK),true)
+	LOCAL_CFLAGS += -DMALLOC_LEAK_CHECK
+endif
+
+LOCAL_MODULE:= libandroid_servers
+
+include $(BUILD_SHARED_LIBRARY)
+```
+
+#### (3) libandroid_servers.so 라이브러리의 JNI_OnLoad() 함수 - onload.cpp   
+android_servers 라이브러리의 구성 파일인 onload.cpp 소스 코드  
+JNI_OnLoad() 함수가 구현돼 있음   
+즉 libandroid_servers.so 라이브러리에는 JNI_OnLoad() 함수가 포함돼 있음   
+System.loadLibrary("android_servers")라는 코드는 android_servers 라이브러리를 로드하면서 JNI_OnLoad() 함수를 실행   
+
+```
+// android / platform / frameworks / base / refs/heads/froyo / . / services / jni / onload.cpp
+
+#include "JNIHelp.h"
+#include "jni.h"
+#include "utils/Log.h"
+#include "utils/misc.h"
+
+namespace android {
+int register_android_server_AlarmManagerService(JNIEnv* env);
+int register_android_server_BatteryService(JNIEnv* env);
+int register_android_server_KeyInputQueue(JNIEnv* env);
+int register_android_server_LightsService(JNIEnv* env);
+int register_android_server_SensorService(JNIEnv* env);
+int register_android_server_VibratorService(JNIEnv* env);
+int register_android_server_SystemServer(JNIEnv* env);
+};
+
+using namespace android;
+
+extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved)
+{
+    JNIEnv* env = NULL;
+    jint result = -1;
+    
+    if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK) { // (3)-1
+        LOGE("GetEnv failed!");
+        return result;
+    }
+    LOG_ASSERT(env, "Could not retrieve the env!");
+    
+    register_android_server_KeyInputQueue(env); // (3)-2
+    register_android_server_LightsService(env);
+    register_android_server_AlarmManagerService(env);
+    register_android_server_BatteryService(env);
+    register_android_server_SensorService(env);
+    register_android_server_VibratorService(env);
+    register_android_server_SystemServer(env);
+    
+    return JNI_VERSION_1_4;
+}
+```
+
+#### (3)-1 GetEnv() 함수를 통해 JNI 버전을 확인하고 JNI 인터페이스 포인터를 얻음  
+#### (3)-2  
+register_android_server_xxx() 함수를 실행  
+JNI 네이티브 함수와 안드로이드 프레임워크를 구성하는 AlarmMangerService, KeyInputQueue 등과 같은 클래스의 네이티브 메서드를 매핑  
+
+
+#### (4) com_android_server_SystemServer.cpp   
+libandroid_server.so 라이브러리의 JNI 네이티브 함수와 SystemServer 클래스의 네이티브 메서드를 매핑하는 부분   
+
+```
+// android / platform / frameworks / base / refs/heads/froyo / . / services / jni / com_android_server_SystemServer.cpp
+
+#include <utils/Log.h>
+#include <utils/misc.h>
+#include "jni.h"
+#include "JNIHelp.h"
+
+namespace android {
+
+extern "C" int system_init();
+
+static void android_server_SystemServer_init1(JNIEnv* env, jobject clazz)
+{
+    system_init();
+}
+
+/*
+ * JNI registration.
+ */
+static JNINativeMethod gMethods[] = { // (4)-1
+    /* name, signature, funcPtr */
+    { "init1", "([Ljava/lang/String;)V", (void*) android_server_SystemServer_init1 },
+};
+
+int register_android_server_SystemServer(JNIEnv* env) // (4)-2
+{
+    return jniRegisterNativeMethods(env, "com/android/server/SystemServer",
+            gMethods, NELEM(gMethods));
+}
+
+}; // namespace android
+```
+
+#### (4)-2   
+
+
+
+#### (5)    
+```
+// android / platform / dalvik / refs/heads/froyo / . / libnativehelper / JNIHelp.c
+
+/*
+ * Register native JNI-callable methods.
+ *
+ * "className" looks like "java/lang/String".
+ */
+int jniRegisterNativeMethods(JNIEnv* env, const char* className,
+    const JNINativeMethod* gMethods, int numMethods)
+{
+    jclass clazz;
+    LOGV("Registering %s natives\n", className);
+    
+    clazz = (*env)->FindClass(env, className);    
+    if (clazz == NULL) {  // (5)-1
+        LOGE("Native registration unable to find class '%s'\n", className);
+        return -1;
+    }
+    
+    if ((*env)->RegisterNatives(env, clazz, gMethods, numMethods) < 0) { // (5)-2
+        LOGE("RegisterNatives failed for '%s'\n", className);
+        return -1;
+    }
+    return 0;
+}
+
+```
+
+#### (5)-1   
+두 번째 인자로 넘겨 받은 className을 이용해서 매핑하려는 네이티브 메서드가 포함된 해당 클래스를 로딩하고 레퍼런스 값을 구함  
+
+#### (5)-2   
+(5)-1에서 로딩한 클래스 정보와 (4)-1에서 작성한 매핑 정보를 RegisterNatives() 함수에 넘겨 매핑 작업을 수행  
+
+따라서,  
+register_android_server_SystemServer()는 com.android.server 패키지 내 SystemServer 클래스의 네이티브 메서드 init1()을 android_server_Systeminit1() 함수로 매핑    
+
+
+### 2. app_process : C 프로그램에서 JNI 네이티브 함수 등록  
+JNI 호출 API를 이용해서 C 프로그램 내에서 자바 기능을 사용하는 경우,  
+프로그래머가 직접 네이티브 메서드를 매핑하려면 JNI_OnLoad() 함수를 사용하지 않고 C 프로그램 내에서 직접 RegisterNatives() 함수를 통해 JNI 네이티브 함수를 자바 클래스의 네이티브 메서드에 링크할 수 있다.   
+
+#### (1) 안드로이드 프레임워크에 사용될 각종 JNI 네이티브 함수를 매핑하는 부분    
+startReg() 함수
+각종 JNI 네이티브 함수를 등록   
+내부적으로 register_jni_procs() 함수를 호출해서 gRegJNI를 인자로 받아 각 클래스의 JNI 네이티브 함수를 등록하는 함수를 순차적으로 실행   
+REG_JNI 매크로는 디버깅을 위한 것으로 없다고 봐도 무방    
+gRegJNI는 JNI 네이티브 함수를 등록하는 함수 포인터를 멤버로 갖는 구조체 배열   
+
+
+```
+// android / platform / frameworks / base / refs/heads/froyo / . / core / jni / AndroidRuntime.cpp
+
+static int register_jni_procs(const RegJNIRec array[], size_t count, JNIEnv* env)
+{
+    for (size_t i = 0; i < count; i++) {
+        if (array[i].mProc(env) < 0) {
+#ifndef NDEBUG
+            LOGD("----------!!! %s failed to load\n", array[i].mName);
+#endif
+            return -1;
+        }
+    }
+    return 0;
+}
+
+static const RegJNIRec gRegJNI[] = {
+    REG_JNI(register_android_debug_JNITest),
+    REG_JNI(register_com_android_internal_os_RuntimeInit),
+    REG_JNI(register_android_os_SystemClock),
+    REG_JNI(register_android_util_EventLog),
+    REG_JNI(register_android_util_Log),
+    REG_JNI(register_android_util_FloatMath),
+    REG_JNI(register_android_text_format_Time),
+    REG_JNI(register_android_pim_EventRecurrence),
+
+    // 생략
+
+    REG_JNI(register_android_backup_BackupHelperDispatcher),
+};
+
+/*
+ * Register android native functions with the VM.
+ */
+/*static*/ int AndroidRuntime::startReg(JNIEnv* env)
+{
+    /*
+     * This hook causes all future threads created in this process to be
+     * attached to the JavaVM.  (This needs to go away in favor of JNI
+     * Attach calls.)
+     */
+    androidSetCreateThreadFunc((android_create_thread_fn) javaCreateThreadEtc);
+    
+    LOGD("--- registering native functions ---\n");
+    
+    /*
+     * Every "register" function calls one or more things that return
+     * a local reference (e.g. FindClass).  Because we haven't really
+     * started the VM yet, they're all getting stored in the base frame
+     * and never released.  Use Push/Pop to manage the storage.
+     */
+    env->PushLocalFrame(200);
+    if (register_jni_procs(gRegJNI, NELEM(gRegJNI), env) < 0) {
+        env->PopLocalFrame(NULL);
+        return -1;
+    }
+    env->PopLocalFrame(NULL);
+    
+    //createJavaThread("fubar", quickTest, (void*) "hello");
+    
+    return 0;
+}
+```
+
+#### (2) register_com_android_internal_os_RuntimeInit() 함수에 대해 자세히 (gRegJNI 배열에 설정된 다른 함수도 비슷한 방식으로 동작)   
+소스 코드 : 안드로이드 RuntimeInit 클래스의 네이티브 메서드와 매핑될 JNI 네이티브 함수의 코드   
+
+
+```
+// android / platform / frameworks / base / refs/heads/froyo / . / core / jni / AndroidRuntime.cpp
+
+
+/*
+ * JNI registration.
+ */
+static JNINativeMethod gMethods[] = { // (2)-1
+    { "finishInit", "()V",
+        (void*) com_android_internal_os_RuntimeInit_finishInit },
+    { "zygoteInitNative", "()V",
+        (void*) com_android_internal_os_RuntimeInit_zygoteInit },
+    { "isComputerOn", "()I",
+        (void*) com_android_internal_os_RuntimeInit_isComputerOn },
+    { "turnComputerOn", "()V",
+        (void*) com_android_internal_os_RuntimeInit_turnComputerOn },    
+    { "getQwertyKeyboard", "()I",
+        (void*) com_android_internal_os_RuntimeInit_getQwertyKeyboard },
+};
+
+int register_com_android_internal_os_RuntimeInit(JNIEnv* env) // (2)-2
+{
+    return jniRegisterNativeMethods(env, "com/android/internal/os/RuntimeInit",
+        gMethods, NELEM(gMethods));
+}
+
+
+/*
+ * Code written in the Java Programming Language calls here from main().
+ */
+static void com_android_internal_os_RuntimeInit_finishInit(JNIEnv* env, jobject clazz) // (2)-3
+{
+    gCurRuntime->onStarted();
+}
+
+static void com_android_internal_os_RuntimeInit_zygoteInit(JNIEnv* env, jobject clazz)
+{
+    gCurRuntime->onZygoteInit();
+}
+
+static jint com_android_internal_os_RuntimeInit_isComputerOn(JNIEnv* env, jobject clazz)
+{
+    return 1;
+}
+
+static void com_android_internal_os_RuntimeInit_turnComputerOn(JNIEnv* env, jobject clazz)
+{
+}
+
+static jint com_android_internal_os_RuntimeInit_getQwertyKeyboard(JNIEnv* env, jobject clazz)
+{
+    char* value = getenv("qwerty");
+    if (value != NULL && strcmp(value, "true") == 0) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+
+```
+
+jniResgterNativeMethods() 함수를 통해 네이티브 메서드와 JNI 네이티브 함수를 매핑, 이 함수에는 매핑할 네이티브 메서드가 포함된 클래스 정보와 매핑 정보가 포함된 구조체가 필요   
+RuntimeInit 클래스(com.android.internal.os 패키지)에 정의된 네이티브 메서드를 매핑 정보( (2)-1 )를 이용해 c 함수( (2)-3 )와 매핑   
+
+
+---
+---
+---
+system server : Java VM calls JNI_OnLoad()   
+app process : invocation API loads Java VM   

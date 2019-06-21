@@ -1,0 +1,36 @@
+---
+layout: post
+title: "JNI와 NDK (6) 안드로이드 NDK로 개발하기"
+date: 2019-04-03 17:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+최종 수정일 : 2019-04-03
+
+# 안드로이드 NDK로 개발하기  
+- 안드로이드 NDK(Native Development Kit) : JNI를 활용한 작업을 쉽게 할 수 있도록 구글에서 제공하는 개발 도구  
+  - C/C++ 소스를 네이티브 라이브러리로 빌드하기 위한 도구(컴파일러, 링커 등) 제공    
+  - 빌드된 네이티브 라이브러리를 안드로이드 패키지 파일(.apk)에 삽입
+  - 네이티브 라이브러리 작성 시 안드로이드 플랫폼에서 지원 가능한 시스템 헤더 파일 및 라이브러리 제공  
+  - NDK 개발 관련 문서, 예제, 튜토리얼 제공  
+  - 
+
+---
+
+### 예제 프로그램 
+실행환경 : ubuntu 18.04, android studio  
+
+![](/assets/jni-4.6-01.png)  
+
+![](/assets/jni-4.6-02.png)  
+
+![](/assets/jni-4.6-03.png)  
+
+![](/assets/jni-4.6-04.png)  
+
+![](/assets/jni-4.6-05.png)  
+
+![](/assets/jni-4.6-06.png)  
+
+![](/assets/jni-4.6-00.png)  

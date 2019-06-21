@@ -1,0 +1,39 @@
+---
+layout: post
+title: "테스트"
+date: 2019-03-09 23:20:22
+author: Sihyeon Kim
+categories: test
+tags: test
+---
+
+testing post.  hello
+
+# testing header
+## testing header2
+
+## testing header3
+
+code test ~~~ ::
+가나다라
+가나다라마바사아
+# 가나다라마바
+
+{% highlight c %}
+#include <stdio.h>
+
+int main() {
+	printf("Hello world!\n"); /* comments */
+	return 0;
+}
+{% endhighlight %}
+
+{% highlight c++ %}
+#include <iostream>
+using namespace std;
+
+int main() {
+  cout << "Hello world!\n";
+  return 0;
+}
+{% endhighlight %}

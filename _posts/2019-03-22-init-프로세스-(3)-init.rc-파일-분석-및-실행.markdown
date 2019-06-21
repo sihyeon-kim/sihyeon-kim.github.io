@@ -1,0 +1,160 @@
+---
+layout: post
+title: "init 프로세스 (3) init.rc 파일 분석 및 실행"
+date: 2019-03-22 11:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+최종 수정일 : 2019-03-22
+
+# init.rc  
+안드로이드 부팅 시 시스템의 환경 설정과 실행할 프로세스를 기술해 놓은 파일이다.  
+init 프로세스가 init.rc 파일을 통해 액선 리스트와 서비스 리스트를 생성한다.  
+init.rc 파일에서 액션 리스트는 `on`키워드로 시작하고 서비스 리스트는 `service`키워드로 시작한다.  
+
+- 액션 리스트  
+  1. 시스템 환경 변수 등록
+  2. 리눅스 명령어들을 통해 부팅 시 필요한 디렉토리 생성
+  3. 특정 파일에 대한 퍼미션을 지정
+- 서비스 리스트
+  1. init 프로세스가 실행시키는 프로세스를 기술
+    - init 프로세스가 실행하는 자식 프로세스 : 일회성 프로그램(부팅음을 출력하는 프로그램), 데몬 프로세스(백그라운드로 구동되면서 애플리케이션이나 시스템 운용에 관여)
+    
+---
+# 액션 리스트
+`on init` 섹션 : 환경 변수를 등록(export)하고, 시스템 동작 시 필요한 파일 및 디렉토리를 생성하고 퍼미션 조작한다. 시스템 동작과 관련된 디렉토리를 마운트한다.
+1. 시스템 환경 변수 등록
+
+```
+// froyo\rootdir\init.rc
+
+on init
+sysclktz 0
+loglevel 3
+# setup the global environment
+// 환경 변수 등록
+// export <name> <value>
+// 환경 변수 이름에 값을 설정한다. 이 명령어가 실행되면 모든 프로세스가 상속 받는다.
+    export PATH /sbin:/system/sbin:/system/bin:/system/xbin
+    export LD_LIBRARY_PATH /system/lib
+    export ANDROID_BOOTLOGO 1
+    export ANDROID_ROOT /system
+    export ANDROID_ASSETS /system/app
+    export ANDROID_DATA /data
+    export EXTERNAL_STORAGE /mnt/sdcard
+    export ASEC_MOUNTPOINT /mnt/asec
+    export BOOTCLASSPATH /system/framework/core.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/android.policy.jar:/system/framework/services.jar
+```
+
+- 루트 파일 시스템 내의 명령어들을 사용하기 위한 실행 경로 등록  
+- 프로그램 컴파일 시 필요한 라이브러리 경로 등록  
+
+
+2. 부팅 시 필요한 디렉토리 생성
+루트 파일 시스템 마운트 부분
+
+```
+mount <type> <device> <dir> [ <flag>\* ] [<options>]
+// 장치를 디렉토리로 마운트한다.
+```
+
+```
+// froyo\rootdir\init.rc
+
+# mount mtd partitions
+    # Mount /system rw first to give the filesystem a chance to save a checkpoint
+    mount yaffs2 mtd@system /system // system 디렉토리 마운트
+    mount yaffs2 mtd@system /system ro remount
+    # We chown/chmod /data again so because mount is run as root + defaults
+    mount yaffs2 mtd@userdata /data nosuid nodev // data 디렉토리 마운트
+    chown system system /data
+    chmod 0771 /data
+```
+
+루트 파일 시스템  
+`/system` directory : shell utility, library, 기본 애플리케이션을 제공  
+`/data` directory : 개발자가 탑재한 사용자 애플리케이션, 사진 데이터 같은 사용자 데이터를 저장  
+`/system/bin` directory : 셸에서 동작하는 유틸리티를 모아둔 곳, toolbox라는 이름의 명령어 모음 제공  
+
+휴대폰 분야는 공간 활용성이 좋은 NAND 플래시를 선호한다. NAND 플래시를 위한 파일 시스템인 yaffs2를 사용해 `/system`과 `/data` 디렉토리를 마운트한다. 개발자가 마운트할 디렉토리나 파일 시스템을 변경하고 싶다면 위의 코드에서 루트 파일 시스템을 마운트하는 부분을 수정해야 한다.  
+
+`on boot` 섹션  
+애플리케이션 종료 조건 설정, 애플리케이션 구동에 필요한 디렉토리 및 파일 퍼미션 설정  
+
+```
+// froyo\rootdir\init.rc
+
+on boot
+# basic network init
+    ifup lo
+    hostname localhost
+    domainname localdomain
+# set RLIMIT_NICE to allow priorities from 19 to -20
+    setrlimit 13 40 40
+# Define the oom_adj values for the classes of processes that can be // 애플리케이션 종료 조건 설정
+# killed by the kernel.  These are used in ActivityManagerService. // 안드로이드 애플리케이션들은 구동 상태에 따라 아래와 같은 형태로 그룹이 나뉜다.
+    setprop ro.FOREGROUND_APP_ADJ 0 // FOREGROUND_APP 전면에 있는 프로그램
+    setprop ro.VISIBLE_APP_ADJ 1 // 화면에는 보이지만 실행되지 않는 애플리케이션
+    setprop ro.SECONDARY_SERVER_ADJ 2 // 서비스 데몬
+    setprop ro.BACKUP_APP_ADJ 2
+    setprop ro.HOME_APP_ADJ 4 // 시작 화면에 등록되는 애플리케이션
+    setprop ro.HIDDEN_APP_MIN_ADJ 7 // 최소화한 애플리케이션
+    setprop ro.CONTENT_PROVIDER_ADJ 14 // 콘텐츠 프로바이더
+    setprop ro.EMPTY_APP_ADJ 15
+```
+
+애플리케이션 종료 조건 설정에서 애플리케이션별 OOM(Out Of Memory) 조정 값(Adjustment Value:ADJ)을 지정한다.  
+OOM : 커널 상에서 애플리케이션에 할당되는 메모리를 모니터링하면서 메모리가 부족할 때 애플리케이션을 종료시킨다.  
+OOM 조정 값 : 메모리가 부족할 때 종료시킬 애플리케이션을 구분하는 데 사용된다. 값이 높을수록 종료 우선순위가 높아진다.  
+
+`on property:<name>=<value>` 섹션  
+
+```
+# adbd on at boot in emulator
+on property:ro.kernel.qemu=1
+    start adbd
+on property:persist.service.adb.enable=1
+    start adbd
+on property:persist.service.adb.enable=0
+    stop adbd
+```
+
+프로퍼티 값이 변경될 경우 실행되는 명령이 기술되어 있다.
+`init.rc`파일에는 `adbd` 서비스의 시작, 종료에 대한 조건이 기술되어 있다.
+
+3. 특정 파일에 대한 퍼미션을 지정
+
+---
+
+# 서비스 리스트
+
+```
+/**
+* 서비스 섹션의 형태
+*/
+service <name> <pathname> [ <argument> ]*
+   <option>
+   <option>
+   ...
+```
+
+`service` 다음 문자열은 실행할 프로세스 이름을 나타내고, 다음 문자열은 프로세스의 경로를 나타낸다. 다음 줄에는 프로세스의 실행에 관련된 옵션이 기술된다.  
+`service` 섹션의 프로세스는 모두 서비스 리스트에 등록된다. `init` 프로세스가 실행되면서 서비스 리스트에 등록된 프로세스를 순차적으로 실행한다.
+
+```
+// froyo\rootdir\init.rc
+
+## Daemon processes to be run by init.
+##
+service console /system/bin/sh
+    console
+# adbd is controlled by the persist.service.adb.enable system property
+service adbd /sbin/adbd
+    disabled
+```
+
+---
+
+# init.rc 파싱 코드 분석
+

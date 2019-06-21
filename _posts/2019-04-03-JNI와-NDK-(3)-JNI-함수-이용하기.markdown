@@ -1,0 +1,169 @@
+---
+layout: post
+title: "JNI와 NDK (3) JNI 함수 이용하기"
+date: 2019-04-03 15:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+최종 수정일 : 2019-04-03
+
+# JNI 함수 이용하기
+- C 코드인 JNI 네이티브 함수에서 자바 측 코드를 제어하는 방법  
+- 자바 객체 생성, 클래스의 정적 멤버 필드에 접근, 클래스의 정적 메서드 호출, 자바 객체의 멤버 필드에 접근, 자바 객체의 메서드 접근  
+
+---
+
+### JNI 함수를 활용하는 예제 프로그램  
+- 실행 환경 : Ubuntu 18.04, Vim  
+- 예제 프로그램의 구조  
+(1) 네이티브 메서드가 선언된 JniFuncMain 클래스  
+(2) JniTest 객체  
+(3) 네이티브 메서드의 실제 구현이 포함된 jnifunc.dll(jnifunc.so)  
+
+- 예제 프로그램의 실행 흐름  
+
+(1) JNI 네이티브 함수 호출.  
+  - 자바 측의 JniFuncMain 클래스에서 createJniObject()라는 네이티브 메서드 호출  
+  - createJniObject() 메서드는 jnitest.dll의 JavaJniFuncMain_createJniObject()라는 C 함수와 JNI를 통해 연결돼 있음.  
+  
+(2) 정적 멤버 필드에 접근해서 값을 얻어옴  
+  - C 레이어에서 JniFuncMain 클래스로 정적 멤버 필드에 접근  
+  
+(3) JniTest 객체 생성  
+(4) JniTest 객체 메서드 호출  
+(5) 네이티브 코드로 리턴값 전달  
+(6) 멤버 필드에 접근해서 값을 설정  
+
+---
+
+### 자바측 코드
+- JniFuncMain 클래스  
+
+### (1) JniFuncMain.java 의 JniFuncMain 클래스, JniTest 클래스
+![01](/assets/jni-4.3-01.png)  
+
+(1)-1  
+네이티브 메서드가 사용되기 전에 jnifunc.so 라이브러리를 미리 로드  
+(1)-2  
+네이티브 메서드를 static으로 선언 -> 별도의 객체 생성 없이 바로 JniFuncMain 클래스를 통해 호출 가능  
+(1)-3  
+createJniObject() 네이티브 메서드에 매핑된 C 함수에서 JniTest 객체의 인스턴스를 생성한 다음 이를 jniObj 객체 변수에 저장  
+(1)-4
+JNI 네이티브 함수에 의해 생성된 jniObj 객체의 callTest() 메서드를 호출  
+
+### (2) JniFuncMain.java 컴파일  
+`javac JniFuncMain.java`  
+
+![02](/assets/jni-4.3-02.png)  
+
+### (3) javah를 통해 네이티브 메서드에 연결할 함수 원형 생성  
+`javah JniFuncMain`  
+
+![03](/assets/jni-4.3-03.png)  
+
+### (4) 생성된 JniFuncMain.h 헤더 파일  
+
+![04](/assets/jni-4.3-04.png)  
+
+- createJniObject() 메서드에 대해 생성된 JNI 네이티브 함수 원형  
+`JNIEXPORT jobject JNICALL Java_JniFuncMain_createJniObject (JNIEnv *, jclass)`  
+  - 두 번째 매개 변수의 타입이 jclass이다.
+  - 네이티브 메서드 `public static native JniTest createJniObject();` 부분이 static 으로 선언 되어 있다.  
+  자바의 정적 메서드는 객체를 생성하지 않고도 클래스를 통해 바로 호출 가능  
+  네이티브 메서드가 객체가 아닌 클래스를 통해 호출되기 때문에 두 번째 매개 변수 타입이 jclass 이다.  
+  따라서 Java_JniFuncMain_createJniObject() JNI 네이티브 함수의 두 번째 매개변수로 JniFuncMain 클래스 레퍼런스가 넘어온다.  
+  
+  
+### (5) jnifunc.cpp 파일  
+C 함수에서 JNI 함수를 이용해 자바의 구성 요소를 사용  
+
+![05](/assets/jni-4.3-05.png)  
+
+
+- JNI를 통한 자바 클래스/객체의 멤버 필드에 대한 접근  
+  1. 접근하려는 멤버 변수가 선언된 자바 클래스의 jclass 값을 구한다.  
+  2. 이 클래스의 멤버 변수에 대한 jfieldID 값을 얻는다.  
+  static 변수인 경우 GetStaticFieldID()라는 JNI 함수를 이용  
+  일반 객체의 멤버 변수인 경우 GetFieldID 라는 JNI 함수를 사용  
+  3. jclass와 jfieldID 값을 이용해 멤버 필드 값을 얻거나 설정  
+
+- 값을 읽으려는 staticIntField 멤버 필드는 JniFuncMain 클래스에 선언되어 있다.  
+  - 이 클래스에 대한 jclass 값은 JNI 네이티브 함수의 두 번째 인자로 넘어온다.  
+  - 만약 특정 클래스의 jclass 값을 얻고 싶다면 JNI 함수인 FindClass()를 이용한다.  
+  
+(5)-1  
+네이티브 코드에서 자바의 멤버 필드에 접근하기 위해서는 해당 멤버 필드에 대한 멤버 필드 ID 값을 구해야한다.  
+멤버 필드 ID는 jfieldID 타입의 변수에 저장된다.  
+값을 읽으려는 멤버 변수 staticIntField가 JniFuncMain 클래스의 정적 멤버 변수이므로 staticIntField 변수의 멤버 필드 ID를 구하려면 JNI 함수인 GetStaticFieldID()를 사용한다.  
+
+(5)-2  
+jclass와 jfieldID 타입의 멤버 필드 ID 값만 있으면 멤버 변수 값을 얻을 수 있다.  
+각 멤버 변수의 타입 및 저장 영역(static or non-static)에 따라 멤버 변수의 값을 읽어오는 적당한 JNI 함수를 호출하면 된다.  
+JNI에서 멤버 필드를 얻어오는 함수는 Get<type>Field 함수와 GetStatic<type>Field 함수이다.  
+여기서 staticIntField 멤버 필드는 int 타입의 정적 멤버 필드이므로 JNI 함수인 GetStaticIntField()를 사용한다.  
+  
+### JNI를 통해 JNI 네이티브 함수에서 자바 객체 생성  
+(5)-3    
+- JNI를 통한 자바 객체의 생성  
+1. 자바 객체를 생성하는 데 필요한 자바 클래스의 jclass 값을 구한다.  
+2. 자바 클래스 생성자의 메서드 ID(jMethodID) 값을 구한다.  
+3. 자바 객체를 생성한다.  
+
+JNI 함수인 FindClass()를 이용해서 객체 생성에 필요한 클래스를 로드  
+예제에서 FindClass() 함수에 JniTest 클래스를 인자로 넘겨 해당하는 jclass 값을 얻는다.  
+
+(5)-4  
+JniTest 클래스에서 생성자의 메서드 ID를 구해야 한다.  
+JNI 네이티브 함수에서 자바 메서드를 이용하려면 이용하고자 하는 메서드에 대한 jmethodID 타입의 메서드 ID를 구해야 한다.  
+이는 JNI 함수 GetMethodID()를 이용한다.  
+만약 클래스를 통해 호출 가능한 정적 메서드의 메서드 ID를 구하고 싶다면 GetStaticMethodID() JNI 함수를 사용하면 된다.  
+
+예제에서 생성자의 메서드 ID를 구해야 하므로 GetMethodID()의 name 인자로 생성자를 가리키는 <init>을 넘겼다.   
+(일반적으로 구하려는 메서드의 이름을 넘긴다. 생성자는 메서드 이름으로 <init>을 이용한다.)  
+
+(5)-5  
+JniTest 클래스의 jclass 값과 생성자의 메서드 ID를 이용해서 JNI 네이티브 함수에서 JniTest 객체를 생성하기 위해 NewObject()라는 JNI 함수를 사용한다.  
+예제에서 JniTest 클래스 생성자는 JniTest(int num)처럼 int 형의 인자를 받기 때문에 NewObject() 호출 시 100이라는 int 형 값을 인자로 넘겼다.  
+생성된 객체의 레퍼런스 값은 jobject 변수에 저장한다.  
+
+### 자바 메서드 호출하기  
+JNI 네이티브 함수에서 JNI 함수를 통해 자바의 메서드를 호출하고 반환 값을 JNI 네이티브 함수의 변수에 저장  
+(5)-6  
+- JNI를 통한 자바 메서드 호출 순서  
+  1. 호출한 메서드가 포함된 자바 클래스의 jclass 값을 구한다.  
+  (호출할 메서드가 자바 객체에 포함된 메서드이면 그 객체의 jobject 값을 구해야 한다.)  
+  2. GetMethodID()로 호출할 메서드의 메서드 ID(jMethodID) 값을 구한다.  
+  (jclass와 GetMethodID 함수 이용)  
+  3. 호출할 메서드의 반환 값 타입에 따라 적당한 JNI 함수를 통해 메서드를 호출한다.  
+  (정적 메서드의 경우에는 CallStatic<type>Method() 함수를 이용하고, 객체 메서드일 경우에는 Call<type>Method() 함수를 이용)   
+  
+FindClass() JNI ㅎㅁ수를 이용해 JniTest 클래스의 jclass 값을 targetClass에 저장해서 이용  
+
+(5)-7  
+GetMethodID() JNI 함수를 이용해 호출할 callByNative()에 대한 메서드 ID 값을 얻는다.  
+callByNative()의 메서드 시그너처는 "(I)I"이다.  
+
+(5)-8  
+JNI 네이티브 함수에서 호출하려고 하는 JniTest 객체의 callByNative() 메서드는 반환값이 int 타입인 메서드이므로 CallIntMethod() JNI 함수를 통해 메서드를 호출한다.  
+callByNative() 메서드 인자가 int 타입이므로, 예제에서 200을 CallIntMethod() 함수의 세 번째 인자로 넘겼다.  
+callByNative() 메서드의 반환 값의 타입은 int이므로, JNI 네이티브 함수에서는 자바 네이티브 타입인 jint 타입의 result 변수에 반환 값을 저장  
+
+### JNI를 통한 멤버 필드 값 설정하기  
+Set<type>Field() 함수를 통해 멤버 필드의 값을 설정  
+- JNI를 통해 멤퍼 필드 값을 설정하는 순서  
+  1. IntField 멤버 변수를 포함한 JniTest 클래스의 jclass 값을 구한다.  
+  2. JniTest 객체의 "IntField"에 대한 필드 ID 값을 구한다.  
+  3. IntField의 값을 result 변수의 값으로 설정한다.  
+
+(6) 실행  
+
+![06](/assets/jni-4.3-06.png)  
+  
+---
+
+### 안드로이드에서의 활용 예
+framewokrs/base/core/jni  
+frameworks/base/services/jni  
+frameworks/base/media/jni  
+

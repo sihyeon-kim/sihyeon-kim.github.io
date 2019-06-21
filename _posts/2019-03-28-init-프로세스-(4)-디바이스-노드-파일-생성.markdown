@@ -1,0 +1,315 @@
+---
+layout: post
+title: "init 프로세스 (4) 디바이스 노드 파일 생성"
+date: 2019-03-28 09:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+최종 수정일 : 2019-03-28
+
+# 디바이스 노드 파일 생성
+- 디바이스 드라이버 : 안드로이드에서 애플리케이션이 하드웨어에 접근하기위해 디바이스 드라이버 이용  
+- 디바이스 노드 파일 : 애플리케이션에서 디바이스 드라이버에 접근하기 위한 디바이스 드라이버의 논리적 파일  
+- 리눅스 : 디바이스 노드 파일을 생성할 수 있게 `mknod` 유틸리티 제공  
+- 안드로이드 : 보안 상의 문제로 `mknod` 같은 디바이스 생성 유틸리티를 제공하지 않음. 안드로이드에서 디바이스 노드 파일 생성 방법을 제공.   
+
+---
+
+# 안드로이드에서 제공하는 디바이스 노드 파일 생성 방법
+
+- 리눅스 : 동작 중에 필요한 디바이스 노드 파일을 `/dev` 디렉토리에 미리 정의  
+애플리케이션은 별도의 절차를 거치지 않고도 미리 정의된 디바이스 노드 파일을 통해 디바이스 드라이버에 접근  
+- 안드로이드 : 루트 파일 시스템에는 `/dev` 디렉토리가 존재하지 않음.
+시스템 운용 중에 `init` 프로세스가 디바이스 노드 파일을 생성해준다.  
+
+- `init` 프로세스가 디바이스 노드파일을 생성하는 두 가지 방법
+1. Cold Plug  
+    - 정적 디바이스 노드 생성 : 이미 정의된 디바이스를 연결하는 방식  
+    - 미리 정의된 디바이스 정보를 바탕으로 `init` 프로세스가 실행될 때 디바이스 노드 파일을 생성  
+2. Hot Plug  
+    - 동적 디바이스 감지 : 동작 중에 연결하는 방식  
+    - 시스템 동작 중 USB 포트에 장치가 삽입될 때 이에 대한 이벤트 처리로 init 프로세스가 해당 장치의 디바이스 노드 파일을 동적으로 생성  
+
+### 1. 정적 디바이스 노드 생성
+
+- `udev`(userspace device)  
+    - 리눅스 커널 2.6x부터 `udev`라는 유틸리티를 사용.  
+    - 데몬 프로세스로 동작하면서 디바이스 드라이버가 로딩될 때 메이저 번호와 마이너 번호, 디바이스 타입을 파악해서 `/dev` 디렉토리에 자동으로 디바이스 노드 파일을 생성한다.  
+    - `udev`를 통해 디바이스 노드 파일이 생성되는 과정  
+    (1) 시스템 동작 중에 장치 삽입 시 커널은 해당 장치에 대한 드라이버를 로딩  
+    (2) 드라이버는 드라이버 시작함수인 `probe()`함수를 호출  
+    (3) `probe()`함수 내에서 `/sys` 파일 시스템에 드라이버의 메이저 번호, 마이너 번호, 디바이스 타입을 저장(디바이스 정보 등록)  
+    (4) `udev` 프로세스에 `uevent`를 발생시킴  
+    (5) 백그라운드 실행중인 `udev` 데몬은 드라이버의 `uevent` 메시지를 분석하여 `/sys` 디렉토리에 등록된 디바이스 정보를 보고 `/dev` 디렉토리의 적절한 위치에 디바이스 노드 파일을 생성  
+    - `udev`를 통한 노드파일 생성의 문제점
+      - `udev` 데몬은 커널의 부팅 과정 이후 사용자 공간에서 동작하는 프로세스이다  
+      - 커널 부팅 과정에서 발생하는 디바이스 드라이버의 `uevent`를 처리하지 못한다. -> 디바이스 노드 파일이 생성되지 않아 애플리케이션은 해당 디바이스를 사용할 수 없는 문제가 생긴다.  
+      - 해결 방법 : 리눅스에서는 `udev` 데몬 실행 이전에 로딩된 디바이스 드라이버에 대해 콜드 플러그(이미 삽입된 장치에 대한 처리를 담당)를 제공하여 해결  
+    
+- 콜드 플러그  
+  (1) 커널 부팅 후 `udev` 데몬이 실행되면서 `/sys` 디렉토리에 미리 등록된 디바이스 정버를 읽어 들임  
+  (2) 각 디바이스에 대해 `uevent`를 다시 발생시켜 디바이스 노드 파일을 생성  
+  - 안드로이드도 이와 동일한 방식으로 디바이스 노드 파일을 생성(`udev` 데몬의 역할을 `init` 프로세스가 수행)  
+  
+- 콜드 플러그 방식으로 디바이스 노드를 생성하는 예 : 바인더 드라이버  
+  - 바인더 드라이버 : 실제 하드웨어가 존재하지 않는 가상의 장치, 프로세스 간의 RPC(Remote Procedure Call)를 제공하는데 쓰인다.  
+  - 애플리케이션은 `/dev/biner`라는 디바이스 노드를 사용해서 바인더 드라이버에 접근해야 바인더를 이용할 수 있다.  
+  (1) 커널 부팅시 바인더 드라이버는 초기화 함수 `misc_register()` 함수를 호출한다.  
+  (2) `misc_register()` 함수는 디바이스 노드 파일을 생성하는 데 필요한 정보(주번호, 부번호, 디바이스 타입)를 `/sys` 디렉토리 밑에 저장한다.  
+    - 커널 부팅 단계이므로 `init`프로세스에 `uevent`를 발생시킬 수 없다. 따라서 `/sys`디렉토리에만 드라이버 정보를 동록하고 디바이스 노드 파일을 생성하는 절차를 종료한다.  
+  (3) 부팅 완료 후 디바이스 노드 파일을 생성하지 못한 드라이버에 대해 콜드플러그 처리를 한다.  
+    - `init` 프로세스는 콜드플러그로 처리될 드라이버들을 이미 알고 있다. 각 드라이버의 디바이스 노드 파일을 미리 정의해 두고 있다. `/system/core/init/devices.c` 파일에는 init 프로세스가 생성하는 노드 파일 목록이 나열되어 있다.  
+    
+```
+// froyo\init\devices.c
+
+static struct perms_ devperms[] = {
+    { "/dev/null",          0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/zero",          0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/full",          0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/ptmx",          0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/tty",           0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/random",        0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/urandom",       0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/ashmem",        0666,   AID_ROOT,       AID_ROOT,       0 },
+    { "/dev/binder",        0666,   AID_ROOT,       AID_ROOT,       0 },
+	    /* logger should be world writable (for logging) but not readable */
+    { "/dev/log/",          0662,   AID_ROOT,       AID_LOG,        1 },
+    /* the msm hw3d client device node is world writable/readable. */
+    { "/dev/msm_hw3dc",     0666,   AID_ROOT,       AID_ROOT,       0 },
+    /* gpu driver for adreno200 is globally accessible */
+    { "/dev/kgsl",          0666,   AID_ROOT,       AID_ROOT,       0 },
+        /* these should not be world writable */
+    { "/dev/diag",          0660,   AID_RADIO,      AID_RADIO,        0 },
+    
+```    
+
+  - `devperms` 구조체  
+    - init 프로세스가 콜드플러그 처리 시에 `devperms` 구조체를 참고하여 `/dev` 디렉토리에 디바이스 노드 파일들으 생성한다.  
+    - 콜드플러그될 드라이버의 디바이스 노드 파일 이름, 접근권한, 사용자 ID, 그룹 ID를 나타낸다.  
+    - 새로운 장치에 대한 디바이스 노드 파일을 생성하고 싶다면 `devperms` 구조체에 해당 드라이버의 정보를 추가하면 된다.  
+    
+- `init` 프로세스의 콜드플러그 처리 절차  
+
+(1) `init.c`의 `int main(int argc, char **argv)`메인 함수에서 `device_init()`함수를 호출한다.  
+
+```
+// froyo\init\init.c
+
+device_fd = device_init();
+```
+
+(2)  `device_init()`함수 : 이벤트 수신 소켓 생성 후 `coldboot()`함수를 호출한다.  
+
+```
+// froyo\init\devices.c
+
+int device_init(void)
+{
+    suseconds_t t0, t1;
+    int fd;
+    fd = open_uevent_socket(); // 1. uevent 수신하기 위한 소켓을 생성
+    if(fd < 0)
+        return -1;
+    fcntl(fd, F_SETFD, FD_CLOEXEC);
+    fcntl(fd, F_SETFL, O_NONBLOCK);
+    t0 = get_usecs();
+    coldboot(fd, "/sys/class");
+    coldboot(fd, "/sys/block");
+    coldboot(fd, "/sys/devices");
+    t1 = get_usecs();
+    log_event_print("coldboot %ld uS\n", ((long) (t1 - t0)));
+    return fd;
+}
+```
+
+(3) `coldboot()`함수 : `do_coldboot()` 함수를 호출하여 커널 부팅시 `/sys` 디렉토리에 정보를 등록한 드라이버에 대해 콜드플러그 처리를 한다.   
+
+```
+// froyo\init\devices.c
+
+static void coldboot(int event_fd, const char *path)
+{
+    DIR *d = opendir(path);
+    if(d) {
+        do_coldboot(event_fd, d);
+        closedir(d);
+    }
+}
+```
+
+(4)  `do_coldboot()`함수 : 인자로 디렉토리 경로를 받아 해당 경로를 이용해 저장된 `uevent` 파일을 찾은 후 해당 파일에 "add" 메시지를 써넣오 강제로 `uevent`를 발생시킨다. `handler_device_fd()` 함수에서 해당 `uevent`를 수신하고 `uevent`에 실린 메시지를 파악한다.  
+
+```
+// froyo\init\devices.c
+
+static void do_coldboot(int event_fd, DIR *d)
+{
+    struct dirent *de;
+    int dfd, fd;
+    dfd = dirfd(d);
+    fd = openat(dfd, "uevent", O_WRONLY);
+    if(fd >= 0) {
+        write(fd, "add\n", 4);
+        close(fd);
+        handle_device_fd(event_fd);
+    }
+    while((de = readdir(d))) {
+        DIR *d2;
+        if(de->d_type != DT_DIR || de->d_name[0] == '.')
+            continue;
+        fd = openat(dfd, de->d_name, O_RDONLY | O_DIRECTORY);
+        if(fd < 0)
+            continue;
+        d2 = fdopendir(fd);
+        if(d2 == 0)
+            close(fd);
+        else {
+            do_coldboot(event_fd, d2);
+            closedir(d2);
+        }
+    }
+}
+```
+
+(5) `uevent` 처리 : `handle_device_fd()` 함수는 `uevent`가 수신되면 `parse_event()`함수를 호출하여 `uevent`의 메시지를 `uevent` 구조체에 할당한다.  
+`uevent` 구조체가 완성되면 `handle_device_event()` 함수를 호출하여 실제 노드 파일을 생성하는 과정을 거친다.
+
+```
+// froyo\init\devices.c
+
+#define UEVENT_MSG_LEN  1024
+void handle_device_fd(int fd)
+{
+    for(;;) {
+        char msg[UEVENT_MSG_LEN+2];
+        char cred_msg[CMSG_SPACE(sizeof(struct ucred))];
+        struct iovec iov = {msg, sizeof(msg)};
+        struct sockaddr_nl snl;
+        struct msghdr hdr = {&snl, sizeof(snl), &iov, 1, cred_msg, sizeof(cred_msg), 0};
+        ssize_t n = recvmsg(fd, &hdr, 0);
+        if (n <= 0) {
+            break;
+        }
+        if ((snl.nl_groups != 1) || (snl.nl_pid != 0)) {
+            /* ignoring non-kernel netlink multicast message */
+            continue;
+        }
+        struct cmsghdr * cmsg = CMSG_FIRSTHDR(&hdr);
+        if (cmsg == NULL || cmsg->cmsg_type != SCM_CREDENTIALS) {
+            /* no sender credentials received, ignore message */
+            continue;
+        }
+        struct ucred * cred = (struct ucred *)CMSG_DATA(cmsg);
+        if (cred->uid != 0) {
+            /* message from non-root user, ignore */
+            continue;
+        }
+        if(n >= UEVENT_MSG_LEN)   /* overflow -- discard */
+            continue;
+        msg[n] = '\0';
+        msg[n+1] = '\0';
+        struct uevent uevent;
+        parse_event(msg, &uevent);
+        handle_device_event(&uevent);
+        handle_firmware_event(&uevent);
+    }
+}
+```
+
+(6) `handle_device_event()` 함수  
+`uvent` 구조체의 `subsytem`을 파악한 후 `/dev` 디렉토리 아래에 하위 디렉토리를 생성한다.  
+`subsystem`은 하드웨어 장치의 사용 용도에 따른 그룹을 나타낸다.  
+예를 들어, 정장 장치일 경우 `subsystem`은 `block`이 되고 `/dev/block` 디렉토리를 생성한다.  
+그래픽 관련 장치일 경우 `/dev/graphic`, 오디오 장치일 경우 `/dev/adsp` 디렉토리를 생성한다.
+하위 디렉토리를 모두 생성하면 `make_device()` 함수를 호출해서 디바이스 노드 파일을 생성한다.  
+
+```
+// froyo\init\devices.c
+
+static void handle_device_event(struct uevent *uevent)
+{
+
+    ...
+
+    /* are we block or char? where should we live? */
+    if(!strncmp(uevent->subsystem, "block", 5)) {
+        block = 1;
+        base = "/dev/block/";
+        mkdir(base, 0755);
+    }
+    
+    ...
+    
+    if(!strcmp(uevent->action, "add")) {
+        make_device(devpath, block, uevent->major, uevent->minor);
+        return;
+    }
+    
+    ...
+    
+}
+```
+
+(7) `make_device()`함수  
+디바이스 노드 파일 리스트(`devperms` 구조체)에서 사용자 ID와 그룹 ID 정보를 얻어온다.  
+`mknod()` 함수를 호출해서 디바이스 노드 파일을 생성한다.  
+
+```
+// froyo\init\devices.c
+
+static void make_device(const char *path, int block, int major, int minor)
+{
+    unsigned uid;
+    unsigned gid;
+    mode_t mode;
+    dev_t dev;
+    if(major > 255 || minor > 255)
+        return;
+    mode = get_device_perm(path, &uid, &gid) | (block ? S_IFBLK : S_IFCHR);
+    dev = (major << 8) | minor;
+    /* Temporarily change egid to avoid race condition setting the gid of the
+     * device node. Unforunately changing the euid would prevent creation of
+     * some device nodes, so the uid has to be set with chown() and is still
+     * racy. Fixing the gid race at least fixed the issue with system_server
+     * opening dynamic input devices under the AID_INPUT gid. */
+    setegid(gid);
+    mknod(path, mode, dev);
+    chown(path, uid, -1);
+    setegid(AID_ROOT);
+}
+```
+
+---
+    
+### 2. 동적 디바이스 감지
+`init` 프로세스는 시스템 동작 중에 추가되는 장치의 디바이스 노드 파일 생성을 위해 핫플러그 처리를 지원한다.  
+아래 코드는 `init`프로세스 이벤트 처리 루프에서 `poll()` 함수를 통해 드라이버로부터 발생하는 `uevent`를 감지하고 `handle_device_fd()` 함수를 호출한다.  
+`handle_device_fd()` 함수를 통해 디바이스 노드 파일을 생성한다.  
+
+```
+// froyo\init\init.c
+
+int main(int argc, char **argv) {
+    
+    ...
+    
+    for(;;) {
+        
+        ...
+        
+        nr = poll(ufds, fd_count, timeout);
+        
+        ...
+        
+        if (ufds[0].revents == POLLIN)
+            handle_device_fd(device_fd);
+        
+        ...
+    }
+    
+    ...
+    
+}
+```

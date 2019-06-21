@@ -1,0 +1,101 @@
+---
+layout: post
+title: "init 프로세스 (6) 프로퍼티 서비스"
+date: 2019-03-28 12:00:00
+author: Sihyeon Kim
+categories: android-framework-study
+---
+
+최종 수정일 : 2019-03-28
+
+# 프로퍼티 서비스
+- 프로퍼티  
+  - 시스템이 동작하는 데 필요한 각종 설정 값을 동작 중인 모든 프로세스에서 공유하기 위한 저장 공간    
+  - 프로퍼티에 접근할 수 있는 API 제공  
+  - `키=값` 형태로 사용  
+  - 리눅스에서 환경 변수를 설정하고, 각 프로세스에서 값을 조회하는 것이 보편적 -> 안드로이드에서 이를 체계적으로 사용하고, 값을 변경하는 경우 권한을 확인하는 과정을 추가해 보안을 강화한 프로퍼티 사용  
+  - 모든 동작 중인 프로세스에서 프로퍼티의 값을 조회 가능  
+  - 오직 `init` 프로세스만이 프로퍼티의 값을 변경 가능  
+  - `init` 이외의 프로세스는 `init` 프로세스에 변경 요청을 한 뒤 프로퍼티의 값을 변경 가능  
+  
+- 프로퍼티 값을 변경하는 방법  
+(1) `init` 이외의 프로세스는 `init` 프로세스에 변경 요청  
+(2) `init` 프로세스는 각 프로퍼티에 대한 접근 권한을 검사
+(3) 프로퍼티 값 변경
+
+---
+# 프로퍼티 초기화
+(1) `property_init()`이 호출  
+`init` 프로세스의 `main()` 함수에서 호출됨  
+프로퍼티 영역을 초기화함  
+프로퍼티의 값을 저장하기 위한 공유 메모리를 생성(이를 위해 ashmem, Android Shared Memory 사용)  
+외부 프로세스들은 공유 메모리 영역에 접근하여 프로퍼티 값을 조회  
+공유 메모리로 프로퍼티 영역을 생성  
+`init_property_area()` 함수 호출하여 공유 메모리 영역 생성  
+
+(2) `start_property_service()` 함수 호출  
+파일에 저장되어 있는 프로퍼티의 기본값을 읽어 프로퍼티 값을 설정  
+`/data/property` 디렉토리에 저장되어 있는 프로퍼티 값을 읽어들인다. `/data/property` 디렉토리에는 시스템이 동작 중에 다른 프로세스에 의해 새로 생성된 프로퍼티 값이나, 동작 중에 변경된 프로퍼티의 값들이 저장된다.  
+서비스를 시작하는데 필요한 유닉스 도메인 소켓(`/dev/socket/property_service`)을 생성  
+
+
+
+---
+# 프로퍼티 변경 요청 처리
+(1) 소켓에 프로퍼티 값의 변경 요청 메시지가 수신되면 `handle_property_set_fd()`함수가 호출  
+
+```
+// froyo\init\property_service.c
+
+void handle_property_set_fd(int fd)
+{
+    prop_msg msg;
+    int s;
+    int r;
+    int res;
+    struct ucred cr;
+    struct sockaddr_un addr;
+    socklen_t addr_size = sizeof(addr);
+    socklen_t cr_size = sizeof(cr);
+    if ((s = accept(fd, (struct sockaddr *) &addr, &addr_size)) < 0) {
+        return;
+    }
+    /* Check socket options here */
+    if (getsockopt(s, SOL_SOCKET, SO_PEERCRED, &cr, &cr_size) < 0) {  // 메시지를 전송한 프로세스의 접근 권한을 검사하기 위해 소켓으로부터 SO_PEERCRED 값을 얻어온다.
+        close(s);
+        ERROR("Unable to recieve socket options\n");
+        return;
+    }
+    r = recv(s, &msg, sizeof(msg), 0);
+    close(s);
+    if(r != sizeof(prop_msg)) {
+        ERROR("sys_prop: mis-match msg size recieved: %d expected: %d\n",
+              r, sizeof(prop_msg));
+        return;
+    }
+    switch(msg.cmd) {
+    case PROP_MSG_SETPROP:
+        msg.name[PROP_NAME_MAX-1] = 0;
+        msg.value[PROP_VALUE_MAX-1] = 0;
+        if(memcmp(msg.name,"ctl.",4) == 0) {
+            if (check_control_perms(msg.value, cr.uid, cr.gid)) {  // 접근 권한을 검사
+                handle_control_message((char*) msg.name + 4, (char*) msg.value);
+            } else {
+                ERROR("sys_prop: Unable to %s service ctl [%s] uid: %d pid:%d\n",
+                        msg.name + 4, msg.value, cr.uid, cr.pid);
+            }
+        } else {
+            if (check_perms(msg.name, cr.uid, cr.gid)) {
+                property_set((char*) msg.name, (char*) msg.value);  // 프로퍼티 값을 
+            } else {
+                ERROR("sys_prop: permission denied uid:%d  name:%s\n",
+                      cr.uid, msg.name);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+```
+
