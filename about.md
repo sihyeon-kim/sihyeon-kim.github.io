@@ -10,7 +10,16 @@ permalink: /about/
 E-mail: sihyeonkim0923 at gmail dot com  
 Github: [https://github.com/sihyeon-kim](https://github.com/sihyeon-kim)
 
+---
+
 ## Education  
-- Mar 2011 ~ Feb 2020 (expected)  
-  - Chungnam National University, Daejeon, Republic of Korea  
-  - in Computer Science Engineering  
+  - Mar 2011 ~ Feb 2020 (expected)  
+    - Chungnam National University, Daejeon, Republic of Korea  
+    - in Computer Science Engineering  
+  
+---
+
+## Work experience  
+  - July 2016 ~ Aug 2016  
+    - KAERI (Korea Atomic Energy Research Institute)  
+    - Intern  
