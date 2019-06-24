@@ -9,6 +9,11 @@ permalink: /about/
 # Sihyeon Kim
 sihyeonkim0923 at gmail dot com  
 
+## Education  
+Mar 2011 ~ Feb 2020  
+  Chungnam National University, Daejeon, Republic of Korea  
+  in Computer Science Engineering  
+
 Centrarium is a custom theme for Jekyll, made by [Ben Centra][bencentra] for his own blog. He'd be humbled if you liked it enough to use it as well! Installation and configuration instructions can be found in the [GitHub repository](https://github.com/bencentra/centrarium).
 
 This page is a good place to write about yourself, your project, your product, or whatever it is your site is for. You can replace the image above, or you can get rid of it entirely. 
