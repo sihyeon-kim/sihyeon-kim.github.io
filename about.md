@@ -22,7 +22,7 @@ permalink: /about/
 ## Work experience  
 - July 2016 ~ Aug 2016  
   - [KAERI](https://www.kaeri.re.kr/eng/) (Korea Atomic Energy Research Institute)  
-  - Technical Information Team, [Nuclear Information Technology Division](https://www.kaeri.re.kr/eng/board?menuId=MENU00711#), Management and Planning Dept.  
+  - Technical Information Team, [Nuclear Information Technology Division](https://www.kaeri.re.kr/eng/board?menuId=MENU00711#), Management and Planning Department    
   - Intern  
 
 ---
