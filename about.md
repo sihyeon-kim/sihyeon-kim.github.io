@@ -37,3 +37,12 @@ permalink: /about/
 ### Open Source Contribution  
 - [tensorflow/docs](https://github.com/tensorflow/docs)  
   - Minor contribution [#670](https://github.com/tensorflow/docs/pull/670): a minor typing error  
+  
+---
+
+## Awards and Honors  
+### Scholarships  
+- Donation Scholarship, Korea LPG Association, Korea Student Aid Foundation    
+  - spring 2016  
+- Academic Performance Scholarship, Chungnam National University   
+  - fall 2011, fall 2014, spring 2015  
