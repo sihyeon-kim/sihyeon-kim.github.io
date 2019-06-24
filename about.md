@@ -13,14 +13,27 @@ permalink: /about/
 ---
 
 ## Education  
-  - Mar 2011 ~ Feb 2020 (expected)  
-    - [Chungnam National University](http://plus.cnu.ac.kr/html/en/), Daejeon, Republic of Korea  
-    - B.S. in [Computer Science and Engineering](http://computer.cnu.ac.kr/index.php?mid=int_greet_en)  
+- Mar 2011 ~ Feb 2020 (expected)  
+  - [Chungnam National University](http://plus.cnu.ac.kr/html/en/), Daejeon, Republic of Korea  
+  - B.S. in [Computer Science and Engineering](http://computer.cnu.ac.kr/index.php?mid=int_greet_en)  
   
 ---
 
 ## Work experience  
-  - July 2016 ~ Aug 2016  
-    - [KAERI](https://www.kaeri.re.kr/eng/) (Korea Atomic Energy Research Institute)  
-    - [Nuclear Information Technology Division](https://www.kaeri.re.kr/eng/board?menuId=MENU00711#)
-    - Intern  
+- July 2016 ~ Aug 2016  
+  - [KAERI](https://www.kaeri.re.kr/eng/) (Korea Atomic Energy Research Institute)  
+  - [Nuclear Information Technology Division](https://www.kaeri.re.kr/eng/board?menuId=MENU00711#)
+  - Intern  
+
+---
+
+## Projects
+### Personal Projects  
+..empty..  
+
+### Team Projects  
+..empty..  
+
+### Open Source Contribution  
+- [tensorflow/docs](https://github.com/tensorflow/docs)  
+  - Minor contribution [#670](https://github.com/tensorflow/docs/pull/670): a minor typing error  
