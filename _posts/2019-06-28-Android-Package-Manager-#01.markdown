@@ -11,6 +11,8 @@ categories: android-packagemanager
 - [packagemanager.java sourcecode](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/core/java/android/content/pm/)  
 - [packagemanagerservice.java sourcecode](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm)
 
+---
+
 ## References 
 
 - packagemanager
@@ -23,7 +25,7 @@ categories: android-packagemanager
 - about scanning  
   - [stackoverflow: scanning in spring and androind ](https://stackoverflow.com/questions/11421085/implementing-spring-like-package-scanning-in-android)
   - [blog: scanning in spring](https://hamait.tistory.com/322)
-  - [scanning android package]https://www.opswat.com/blog/scanning-android-package-files-apks-metadefender-cloud
+  - [scanning android package](https://www.opswat.com/blog/scanning-android-package-files-apks-metadefender-cloud)
 
 - others  
   - [android boot process](https://hackernoon.com/the-android-boot-process-2ce4c498615b)
