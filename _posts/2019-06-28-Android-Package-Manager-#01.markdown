@@ -8,8 +8,8 @@ categories: android-packagemanager
 
 # Android Packagemanager #01
 
-[packagemanager.java sourcecode](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/core/java/android/content/pm/)
-[packagemanagerservice.java sourcecode](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm)
+- [packagemanager.java sourcecode](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/core/java/android/content/pm/)  
+- [packagemanagerservice.java sourcecode](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm)
 
 ## References 
 
