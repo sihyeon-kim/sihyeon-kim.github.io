@@ -34,8 +34,8 @@ categories: android-packagemanager
 ## 참고 자료 
 
 - Pacakage Manager와 관련된 글
-  - [Andorid PackageManager and PacakageInstaller eng ver.](http://ghostkei.blogspot.com/2015/09/external-post-in-depth-android-package_32.html)
-  - [Andorid PackageManager and PacakageInstaller kor ver.](http://kpbird.blogspot.com/2012/10/in-depth-android-package-manager-and.html)
+  - [Andorid PackageManager and PacakageInstaller Kor ver.](http://ghostkei.blogspot.com/2015/09/external-post-in-depth-android-package_32.html)
+  - [Andorid PackageManager and PacakageInstaller Eng ver.](http://kpbird.blogspot.com/2012/10/in-depth-android-package-manager-and.html)
   - [Wikipedia: Android Application Package](https://en.wikipedia.org/wiki/Android_application_package)
   - [Quora: Android Package Installer](https://www.quora.com/What-is-an-Android-package-installer)
 
