@@ -13,6 +13,7 @@ categories: android-packagemanager
 - adb를 통해 packagemanager dump 출력 시도  
 - dump 출력 시 확인해야 하는 부분에 대해 멘토에게 문의(06.26) 후 답변 기다리는 중  
 - pm(pacakage manager) 디렉토리에 포함된 소스코드 확인  
+
 ### 앞으로의 진행 계획    
 - 멘토 답변을 받은 뒤 adb을 통해 package manager 확인  
 - pm 디렉토리 내에서 구체적으로 어느 소스 코드를 봐야하는지 선정 후 확습
