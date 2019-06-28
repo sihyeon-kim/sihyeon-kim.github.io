@@ -41,6 +41,8 @@ categories: android-packagemanager
 - Package Manager는 데이터 디렉토리 /data/data/<package name>을 생성해 저장하고 native library와 cache data를 참조/공유한다.  
   
 ### 세부적인 APK 설치 과정  
+Package Manager Service는 다음의 과정을 실행  
+
 1. wating  
 2. Installation Process Queue에 Package 추가  
 3. Package 설치 경로를 결정  
