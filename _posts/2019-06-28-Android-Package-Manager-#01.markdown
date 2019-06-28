@@ -16,7 +16,7 @@ categories: android-packagemanager
 
 ### 앞으로의 진행 계획    
 - 멘토 답변을 받은 뒤 adb을 통해 package manager 확인  
-- pm 디렉토리 내에서 구체적으로 어느 소스 코드를 봐야하는지 선정 후 확습
+- pm 디렉토리 내에서 구체적으로 어느 소스 코드를 봐야하는지 선정 후 학습
 
 ---
 
