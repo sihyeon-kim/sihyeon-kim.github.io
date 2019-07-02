@@ -125,5 +125,23 @@ categories: android-packagemanager
                 }
 ```
 
+### scanDirLI method in PackageManagerService.java  
+-  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#5625)
+```
 
-
+    private void scanDirLI(File dir, int parseFlags, int scanFlags, long currentTime) {
+        final File[] files = dir.listFiles();
+        if (ArrayUtils.isEmpty(files)) {
+            Log.d(TAG, "No files in app dir " + dir);
+            return;
+        }
+        if (DEBUG_PACKAGE_SCANNING) {
+            Log.d(TAG, "Scanning app dir " + dir + " scanFlags=" + scanFlags
+                    + " flags=0x" + Integer.toHexString(parseFlags));
+        }
+        
+        ...
+        
+    }
+```
+- 위 메소드에서 DEBUG_PACKAGE_SCANNING flag가 보인다. 이 값을 true로 설정하여 로그를 찍으면 package scanning 동작 과정을 상세히 볼 수 있을 것이다. *(멘토님이 조언해주신 부분)*   
