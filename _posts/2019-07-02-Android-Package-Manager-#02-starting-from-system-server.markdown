@@ -6,14 +6,20 @@ author: Sihyeon Kim
 categories: android-packagemanager
 ---
 
-- 안드로이드 버전: android 6.0.1 r77  
-- [[ code ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77)]   
+## 프로젝트 진행 현황
+### 진행 현황 2019.07.05  
+- wip
+### 앞으로의 진행 계획    
+- wip
 
 ---
 
+- 안드로이드 버전: android 6.0.1 r77  
+- [[ code ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77)]   
+
 # SystemServer.java에서 시작  
 - 먼저 SystemServer.java 에서 PackageManagerService를 생성한다  
-- [ code ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/java/com/android/server/SystemServer.java#364)  
+- [ code: SystemServer.java #364 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/java/com/android/server/SystemServer.java#364)  
 ```
         // Start the package manager.
         Slog.i(TAG, "Package Manager");
@@ -22,6 +28,27 @@ categories: android-packagemanager
         mFirstBoot = mPackageManagerService.isFirstBoot();
         mPackageManager = mSystemContext.getPackageManager();
 ```  
+- 그 다음 PackageManagerService.main 함수를 살펴본다.  
+
+## PackageManagerService.java  
+- [ code: PackageManagerService.java ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java)  
+- [ code: PackageManagerService.java #1766](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1766)  
+```
+    public static PackageManagerService main(Context context, Installer installer,
+            boolean factoryTest, boolean onlyCore) {
+        PackageManagerService m = new PackageManagerService(context, installer,
+                factoryTest, onlyCore);
+        ServiceManager.addService("package", m);
+        return m;
+    }
+```   
+- 위 코드에서 PackageManagerService 인스턴스를 생성한다.  
+- 그리고 ServiceManager의 addService를 통해 PackageManagerService를 등록한다.   
+- 이제 PacakageManagerService 클래스의 생성자 코드를 찾아본다.  
+
+### PackageManagerService Constructor in PackageManagerService.java  
+- [ code: PackageManagerService.java #1802](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1802)  
+- 이 생성자에서 
 
 
 
