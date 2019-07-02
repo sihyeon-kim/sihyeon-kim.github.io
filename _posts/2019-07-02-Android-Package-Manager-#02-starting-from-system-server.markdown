@@ -32,7 +32,7 @@ categories: android-packagemanager
 
 ## PackageManagerService.java  
 - [ code: PackageManagerService.java ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java)  
-- [ code: PackageManagerService.java #1766](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1766)  
+- [ code: PackageManagerService.java #1766 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1766)  
 ```
     public static PackageManagerService main(Context context, Installer installer,
             boolean factoryTest, boolean onlyCore) {
@@ -47,8 +47,14 @@ categories: android-packagemanager
 - 이제 PacakageManagerService 클래스의 생성자 코드를 찾아본다.  
 
 ### PackageManagerService Constructor in PackageManagerService.java  
-- [ code: PackageManagerService.java #1802](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1802)  
-- 이 생성자에서 
+- [ code: PackageManagerService.java #1802 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1802)  
+- 이 생성자에서 sharedUserID 설정, App Directory 초기화, Framework 로딩, Packages 수집 등 다양한 역할을 한다.  
+- 생성자 기능을 코드를 통해 개략적으로 살펴보면 아래와 같다.  
+- sharedUserID 설정 [ code: PackageManagerService.java #1816 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1816)  
+- Handler설정, App Directory 초기화 [ code: PackageManagerService.java #1872 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1872)    
+- Framework 로딩: .apk와 .jar 파일을 로딩한다. [ code: PackageManagerService.java #1998 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1998)  
+- collect packages [ code: PackageManagerService.java #2063 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#2063)  
+
 
 
 
