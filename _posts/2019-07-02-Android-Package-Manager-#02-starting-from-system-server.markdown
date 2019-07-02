@@ -145,3 +145,16 @@ categories: android-packagemanager
     }
 ```
 - 위 메소드에서 DEBUG_PACKAGE_SCANNING flag가 보인다. 이 값을 true로 설정하여 로그를 찍으면 package scanning 동작 과정을 상세히 볼 수 있을 것이다. *(멘토님이 조언해주신 부분)*   
+
+### 7월 2일  
+스캔이 이루어질것 같은 코드확인,  
+정확히 어떻게 이루어지는지 확인할 것,  
+
+
+# 참고 자료  
+1. [웹사이트: Android Framework analysis-PackageManager analysis](https://www.programering.com/a/MzN5QzNwATk.html)  
+  - 7월 2일 위 글에 주로 포함됨
+2. [Naver Blog: Package Scanning의 간략한 과정](http://blog.naver.com/PostView.nhn?blogId=hyup8509&logNo=130150211745)  
+  - 7월 2일 참고
+3. [Google Books: Android Security Internals](https://books.google.co.kr/books?id=-QcvDwAAQBAJ&pg=PA64&dq=packagemanagerservice&hl=ko&sa=X&ved=0ahUKEwidvsHFppbjAhVtEqYKHc_oCiwQ6AEIKDAA#v=onepage&q=packagemanagerservice&f=false)  
+  - 7월 2일 아직 포함 안됨: 읽어보고 포함시킬 예정
