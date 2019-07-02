@@ -152,6 +152,7 @@ categories: android-packagemanager
 스캔이 이루어질것 같은 코드확인,  
 정확히 어떻게 이루어지는지 확인할 것,  
 동작과정 확인하면서 개선점 찾을 것(동작 과정 확인이 우선인듯 .................,,,;;)    
+scanDirLI 메소드에서 호출하는 scanPackageLI 함수 확인할것   
  
 ---
 
