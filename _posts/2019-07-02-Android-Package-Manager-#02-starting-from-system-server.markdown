@@ -54,7 +54,7 @@ categories: android-packagemanager
   - Handler설정, App Directory 초기화 [ code: PackageManagerService.java #1872 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1872)    
   - Framework 로딩: .apk와 .jar 파일을 로딩한다. [ code: PackageManagerService.java #1998 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#1998)  
   - collect packages [ code: PackageManagerService.java #2063 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r81/services/core/java/com/android/server/pm/PackageManagerService.java#2063)  
-    - *여기서 scanDirLI 함수를 자세히 살펴보자. PackageParser가 보인다.*  
+    - *여기서 scanDirLI 함수를 자세히 살펴보자. PackageParser가 눈에 띈다. 여기서 스캐닝이 일어나고, 이후의 코드에서 불필요한 패키지 리스트를 제거하는 등의 작업이 이루어진다고 생각된다.*  
 ```
             // Collect vendor overlay packages.
             // (Do this before scanning any apps.)
@@ -74,7 +74,56 @@ categories: android-packagemanager
                     | PackageParser.PARSE_IS_SYSTEM_DIR
                     | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
 ```
-
+```
+// Prune any system packages that no longer exist.
+            final List<String> possiblyDeletedUpdatedSystemApps = new ArrayList<String>();
+            if (!mOnlyCore) {
+                Iterator<PackageSetting> psit = mSettings.mPackages.values().iterator();
+                while (psit.hasNext()) {
+                    PackageSetting ps = psit.next();
+                    /*
+                     * If this is not a system app, it can't be a
+                     * disable system app.
+                     */
+                    if ((ps.pkgFlags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                        continue;
+                    }
+                    /*
+                     * If the package is scanned, it's not erased.
+                     */
+                    final PackageParser.Package scannedPkg = mPackages.get(ps.name);
+                    if (scannedPkg != null) {
+                        /*
+                         * If the system app is both scanned and in the
+                         * disabled packages list, then it must have been
+                         * added via OTA. Remove it from the currently
+                         * scanned package so the previously user-installed
+                         * application can be scanned.
+                         */
+                        if (mSettings.isDisabledSystemPackageLPr(ps.name)) {
+                            logCriticalInfo(Log.WARN, "Expecting better updated system app for "
+                                    + ps.name + "; removing system app.  Last known codePath="
+                                    + ps.codePathString + ", installStatus=" + ps.installStatus
+                                    + ", versionCode=" + ps.versionCode + "; scanned versionCode="
+                                    + scannedPkg.mVersionCode);
+                            removePackageLI(ps, true);
+                            mExpectingBetter.put(ps.name, ps.codePath);
+                        }
+                        continue;
+                    }
+                    if (!mSettings.isDisabledSystemPackageLPr(ps.name)) {
+                        psit.remove();
+                        logCriticalInfo(Log.WARN, "System package " + ps.name
+                                + " no longer exists; wiping its data");
+                        removeDataDirsLI(null, ps.name);
+                    } else {
+                        final PackageSetting disabledPs = mSettings.getDisabledSystemPkgLPr(ps.name);
+                        if (disabledPs.codePath == null || !disabledPs.codePath.exists()) {
+                            possiblyDeletedUpdatedSystemApps.add(ps.name);
+                        }
+                    }
+                }
+```
 
 
 
