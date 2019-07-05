@@ -153,7 +153,14 @@ categories: android-packagemanager
 정확히 어떻게 이루어지는지 확인할 것,  
 동작과정 확인하면서 개선점 찾을 것(동작 과정 확인이 우선인듯 .................,,,;;)    
 scanDirLI 메소드에서 호출하는 scanPackageLI 함수 확인할것   
- 
+
+---
+
+### 로그 출력  
+- 소스 빌드 및 DEBUG_PACKAGE_SCANNING 로그 출력 참고  
+[blog: kyungsoo](https://rudtn082.github.io/android/PackageManager2-post)  
+[blog: jung geun](https://im8768.github.io/15th-post/)  
+
 ---
 
 # 참고 자료  
