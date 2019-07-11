@@ -9,6 +9,16 @@ categories: android-packagemanager
 - 안드로이드 버전: android 6.0.1 r77  
 - [[ code ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77)]   
 
+### 로그 출력 7월 2일  
+- 소스 빌드 및 DEBUG_PACKAGE_SCANNING 로그 출력 참고  
+[blog: kyungsoo](https://rudtn082.github.io/android/PackageManager2-post)  
+[blog: jung geun](https://im8768.github.io/15th-post/)  
+
+### 7월 11일  
+
+
+---
+
 # SystemServer.java에서 시작  
 - 먼저 SystemServer.java 에서 PackageManagerService를 생성한다  
 - [ code: SystemServer.java #364 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/java/com/android/server/SystemServer.java#364)  
@@ -44,10 +54,10 @@ categories: android-packagemanager
 - 생성자 기능을 코드를 통해 개략적으로 살펴보면 아래와 같다.  
   - sharedUserID 설정 [ code: PackageManagerService.java #1816 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1816)  
   - Handler설정, App Directory 초기화 [ code: PackageManagerService.java #1872 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1872)    
-    - File( parent directory, child file )  
+    - File( parent directory, child file ): parent directory의 child file에 대한 객체 생성  
   - mSettings.readLPw() [ code: PackageManagerService.java #1913 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1913)  
     - readLPw method [ code: Settings.java #2500 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/Settings.java#2500)  
-    - packages.xml을 읽는다. packages.xml에는 permission, permission-trees, shared-user 등의 정보가 있다.  
+    - packages.xml을 읽는다. packages.xml에는 permission, permission-trees, shared-user 등과 같은 애플리케이션의 정보가 있다.  
     - 아래는 Setting.java에서 mSettingsFilename 변수  
     ```
     mSettingsFilename = new File(mSystemDir, "packages.xml");
@@ -57,20 +67,20 @@ categories: android-packagemanager
   - ensure external libraries have had dexopt run on them [ code: PackageManagerService.java #1967 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1967)  
     - 주석: For now, we're compiling these system "shared libraries" (and framework jars) into all available architectures. It's possible to compile them only when we come across an app that uses them (there's already logic for that in scanPackageLI) but that adds some complexity.  
   - Framework 로딩: .apk와 .jar 파일을 로딩한다. [ code: PackageManagerService.java #1998 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1998)  
+    - .apk와 .jar을 불러와 alreadyDexOpted에 넣는다.  
+    - ABI(Appication Binary Interface) 
   - collect packages [ code: PackageManagerService.java #2063 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2063)  
     - 여기서 scanDirLI 함수 살펴보자. PackageParser가 눈에 띈다. 여기서 스캐닝이 일어나고, 이후의 코드에서 불필요한 패키지 리스트를 제거하는 등의 작업이 이루어진다.  
-    
+    - 해당 디렉토리의 파일 객체를 생성해 스캔을 진행한다.  
+    - OEM(Original Equipment Manufacturer)  
+##### *중간에 코드 아직 안봤음!!!!!!!*
+  - SCANEND [ code: PackageManagerService.java #2271 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2271)
 
 ### scanDirLI method in PackageManagerService.java  
--  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)  
+-  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)   
 
----
-
-### 로그 출력 7월 2일  
-- 소스 빌드 및 DEBUG_PACKAGE_SCANNING 로그 출력 참고  
-[blog: kyungsoo](https://rudtn082.github.io/android/PackageManager2-post)  
-[blog: jung geun](https://im8768.github.io/15th-post/)  
-
+### scanPackageLI method   
+- [ code: PackageManagerService.java #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5736)  
 ---
 
 # 참고 자료  
