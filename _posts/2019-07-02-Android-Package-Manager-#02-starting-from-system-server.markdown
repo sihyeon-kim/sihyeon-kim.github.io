@@ -45,6 +45,13 @@ categories: android-packagemanager
   - sharedUserID 설정 [ code: PackageManagerService.java #1816 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1816)  
   - Handler설정, App Directory 초기화 [ code: PackageManagerService.java #1872 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1872)    
     - File( parent directory, child file )  
+  - mSettings.readLPw() [ code: PackageManagerService.java #1913 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1913)  
+    - readLPw method [ code: Settings.java #2500 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/Settings.java#2500)  
+    - packages.xml을 읽는다. packages.xml에는 permission, permission-trees, shared-user 등의 정보가 있다.  
+    - 아래는 Setting.java에서 mSettingsFilename 변수  
+    ```
+    mSettingsFilename = new File(mSystemDir, "packages.xml");
+    ```
   - SCAN START [ code: PackageManagerService.java #1925 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1925)  
   - BOOTCLASSPATH 가져옴 [ code: PackageManagerService.java #1936 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1936)  
   - ensure external libraries have had dexopt run on them [ code: PackageManagerService.java #1967 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1967)  
@@ -52,96 +59,10 @@ categories: android-packagemanager
   - Framework 로딩: .apk와 .jar 파일을 로딩한다. [ code: PackageManagerService.java #1998 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1998)  
   - collect packages [ code: PackageManagerService.java #2063 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2063)  
     - *여기서 scanDirLI 함수를 자세히 살펴보자. PackageParser가 눈에 띈다. 여기서 스캐닝이 일어나고, 이후의 코드에서 불필요한 패키지 리스트를 제거하는 등의 작업이 이루어진다고 생각된다.*  
-```
-            // Collect vendor overlay packages.
-            // (Do this before scanning any apps.)
-            // For security and version matching reason, only consider
-            // overlay packages if they reside in VENDOR_OVERLAY_DIR.
-            File vendorOverlayDir = new File(VENDOR_OVERLAY_DIR);
-            scanDirLI(vendorOverlayDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
-            // Find base frameworks (resource packages without code).
-            scanDirLI(frameworkDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED,
-                    scanFlags | SCAN_NO_DEX, 0);
-            // Collected privileged system packages.
-            final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
-            scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
-```
-```
-// Prune any system packages that no longer exist.
-            final List<String> possiblyDeletedUpdatedSystemApps = new ArrayList<String>();
-            if (!mOnlyCore) {
-                Iterator<PackageSetting> psit = mSettings.mPackages.values().iterator();
-                while (psit.hasNext()) {
-                    PackageSetting ps = psit.next();
-                    /*
-                     * If this is not a system app, it can't be a
-                     * disable system app.
-                     */
-                    if ((ps.pkgFlags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                        continue;
-                    }
-                    /*
-                     * If the package is scanned, it's not erased.
-                     */
-                    final PackageParser.Package scannedPkg = mPackages.get(ps.name);
-                    if (scannedPkg != null) {
-                        /*
-                         * If the system app is both scanned and in the
-                         * disabled packages list, then it must have been
-                         * added via OTA. Remove it from the currently
-                         * scanned package so the previously user-installed
-                         * application can be scanned.
-                         */
-                        if (mSettings.isDisabledSystemPackageLPr(ps.name)) {
-                            logCriticalInfo(Log.WARN, "Expecting better updated system app for "
-                                    + ps.name + "; removing system app.  Last known codePath="
-                                    + ps.codePathString + ", installStatus=" + ps.installStatus
-                                    + ", versionCode=" + ps.versionCode + "; scanned versionCode="
-                                    + scannedPkg.mVersionCode);
-                            removePackageLI(ps, true);
-                            mExpectingBetter.put(ps.name, ps.codePath);
-                        }
-                        continue;
-                    }
-                    if (!mSettings.isDisabledSystemPackageLPr(ps.name)) {
-                        psit.remove();
-                        logCriticalInfo(Log.WARN, "System package " + ps.name
-                                + " no longer exists; wiping its data");
-                        removeDataDirsLI(null, ps.name);
-                    } else {
-                        final PackageSetting disabledPs = mSettings.getDisabledSystemPkgLPr(ps.name);
-                        if (disabledPs.codePath == null || !disabledPs.codePath.exists()) {
-                            possiblyDeletedUpdatedSystemApps.add(ps.name);
-                        }
-                    }
-                }
-```
+    
 
 ### scanDirLI method in PackageManagerService.java  
--  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)
-```
-
-    private void scanDirLI(File dir, int parseFlags, int scanFlags, long currentTime) {
-        final File[] files = dir.listFiles();
-        if (ArrayUtils.isEmpty(files)) {
-            Log.d(TAG, "No files in app dir " + dir);
-            return;
-        }
-        if (DEBUG_PACKAGE_SCANNING) {
-            Log.d(TAG, "Scanning app dir " + dir + " scanFlags=" + scanFlags
-                    + " flags=0x" + Integer.toHexString(parseFlags));
-        }
-        
-        ...
-        
-    }
-```
-- 위 메소드에서 DEBUG_PACKAGE_SCANNING flag가 보인다.
+-  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)  
 
 ---
 
