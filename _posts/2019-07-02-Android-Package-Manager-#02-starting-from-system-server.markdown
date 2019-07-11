@@ -82,8 +82,9 @@ categories: android-packagemanager
 ### scanDirLI method in PackageManagerService.java  
 -  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)   
 
-### scanPackageLI method   
-- [ code: PackageManagerService.java #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5736)  
+### scanPackageLI method    
+- [ code: PackageManagerService.java #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5736)   
+
 ---
 
 # 참고 자료  
