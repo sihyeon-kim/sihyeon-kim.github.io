@@ -15,7 +15,10 @@ categories: android-packagemanager
 [blog: jung geun](https://im8768.github.io/15th-post/)  
 
 ### 7월 11일  
-
+- 세 부분으로 나누어 진행  
+  - 넥서스 5에 소스를 올려 스캐닝관련 로그 출력: 기기에 직접 올리면 로그가 더 많이 나올 것이라 생각    
+  - DEBUG_PACKAGE_SCANNING 플래그 관련 코드 분석: 로그 출력과 관련된 플래그 주변 코드가 결국 중요할 것이라 생각    
+  - PackageManagerService 생성자 코드 분석: 부팅 과정에 따라 SystemServer에서 호출하는 생성자를 보면 스캐닝 동작 과정 이해할 수 있을 것이라 생각  
 
 ---
 
@@ -74,7 +77,7 @@ categories: android-packagemanager
     - 해당 디렉토리의 파일 객체를 생성해 스캔을 진행한다.  
     - OEM(Original Equipment Manufacturer)  
 ##### *중간에 코드 아직 안봤음!!!!!!!*
-  - SCANEND [ code: PackageManagerService.java #2271 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2271)
+  - SCAN END [ code: PackageManagerService.java #2271 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2271)
 
 ### scanDirLI method in PackageManagerService.java  
 -  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)   
