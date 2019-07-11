@@ -44,6 +44,11 @@ categories: android-packagemanager
 - 생성자 기능을 코드를 통해 개략적으로 살펴보면 아래와 같다.  
   - sharedUserID 설정 [ code: PackageManagerService.java #1816 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1816)  
   - Handler설정, App Directory 초기화 [ code: PackageManagerService.java #1872 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1872)    
+    - File( parent directory, child file )  
+  - SCAN START [ code: PackageManagerService.java #1925 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1925)  
+  - BOOTCLASSPATH 가져옴 [ code: PackageManagerService.java #1936 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1936)  
+  - ensure external libraries have had dexopt run on them [ code: PackageManagerService.java #1967 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1967)  
+    - 주석: For now, we're compiling these system "shared libraries" (and framework jars) into all available architectures. It's possible to compile them only when we come across an app that uses them (there's already logic for that in scanPackageLI) but that adds some complexity.  
   - Framework 로딩: .apk와 .jar 파일을 로딩한다. [ code: PackageManagerService.java #1998 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#1998)  
   - collect packages [ code: PackageManagerService.java #2063 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2063)  
     - *여기서 scanDirLI 함수를 자세히 살펴보자. PackageParser가 눈에 띈다. 여기서 스캐닝이 일어나고, 이후의 코드에서 불필요한 패키지 리스트를 제거하는 등의 작업이 이루어진다고 생각된다.*  
