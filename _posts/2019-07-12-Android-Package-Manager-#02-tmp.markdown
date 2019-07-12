@@ -17,6 +17,7 @@ categories: android-packagemanager
     private PackageParser.Package scanPackageLI(File scanFile, int parseFlags, int scanFlags,
             long currentTime, UserHandle user) throws PackageManagerException
 ```
+
   - [ #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5732)  
 
 - scanPackageLI(PackageParser.Package pkg, int parseFlags, int scanFlags, long currentTime, UserHandle user)  
@@ -24,4 +25,5 @@ categories: android-packagemanager
     private PackageParser.Package scanPackageLI(PackageParser.Package pkg, int parseFlags,
             int scanFlags, long currentTime, UserHandle user) throws PackageManagerException
 ```
+
   - [ #6467 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#6467)  
