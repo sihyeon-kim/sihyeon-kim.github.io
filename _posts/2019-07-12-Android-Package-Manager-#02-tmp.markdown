@@ -12,18 +12,17 @@ categories: android-packagemanager
     - 위 코드 #5736 줄에서 scanPacakageDirtyLI를 호출하는 것이 아니다  
 - [ #5645 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5645)  
 
-- scanPackageLI(File scanFile, int parseFlags, int scanFlags, long currentTime, UserHandle user)  
+- scanPackageLI(File scanFile, int parseFlags, int scanFlags, long currentTime, UserHandle user) [ #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5732)    
 ```
     private PackageParser.Package scanPackageLI(File scanFile, int parseFlags, int scanFlags,
             long currentTime, UserHandle user) throws PackageManagerException
 ```
 
-  - [ #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5732)  
 
-- scanPackageLI(PackageParser.Package pkg, int parseFlags, int scanFlags, long currentTime, UserHandle user)  
+
+- scanPackageLI(PackageParser.Package pkg, int parseFlags, int scanFlags, long currentTime, UserHandle user)
+[ #6467 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#6467)    
 ```
     private PackageParser.Package scanPackageLI(PackageParser.Package pkg, int parseFlags,
             int scanFlags, long currentTime, UserHandle user) throws PackageManagerException
 ```
-
-  - [ #6467 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#6467)  
