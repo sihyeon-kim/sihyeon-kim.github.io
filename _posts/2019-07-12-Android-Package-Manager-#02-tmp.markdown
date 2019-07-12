@@ -1,0 +1,27 @@
+---
+layout: post
+title: "Android Package Manager #03 tmp"
+date: 2019-07-12 20:00:00
+author: Sihyeon Kim
+categories: android-packagemanager
+---
+
+- 아래 링크는 scanDirLI에서 scanPackageLI 호출하는 부분  
+  - scanPackageLI는 overloading 되어 있다  
+  - scanDirLI에서 호출하는 부분은 [ #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5732) 줄인 file을 변수로 받는 부분  
+    - 위 코드 #5736 줄에서 scanPacakageDirtyLI를 호출하는 것이 아니다  
+- [ #5645 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5645)  
+
+- scanPackageLI(File scanFile, int parseFlags, int scanFlags, long currentTime, UserHandle user)  
+```
+    private PackageParser.Package scanPackageLI(File scanFile, int parseFlags, int scanFlags,
+            long currentTime, UserHandle user) throws PackageManagerException
+```
+- [ #5736 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5732)  
+
+- scanPackageLI(PackageParser.Package pkg, int parseFlags, int scanFlags, long currentTime, UserHandle user)  
+```
+    private PackageParser.Package scanPackageLI(PackageParser.Package pkg, int parseFlags,
+            int scanFlags, long currentTime, UserHandle user) throws PackageManagerException
+```
+- [ #6467 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#6467)  
