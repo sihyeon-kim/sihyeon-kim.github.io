@@ -77,7 +77,10 @@ categories: android-packagemanager
     - 해당 디렉토리의 파일 객체를 생성해 스캔을 진행한다.  
     - OEM(Original Equipment Manufacturer)  
 ##### *중간에 코드 아직 안봤음!!!!!!!*
-  - SCAN END [ code: PackageManagerService.java #2271 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2271)
+  - SCAN END [ code: PackageManagerService.java #2271 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#2271)  
+
+- 아래는 nexus5 로그 중 time to scan 부분
+![log](/asssets/log-nexus5.png)
 
 ### scanDirLI method in PackageManagerService.java  
 -  [ code: PackageManagerService.java #5625 ](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/services/core/java/com/android/server/pm/PackageManagerService.java#5625)   
