@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Android Package Manager #03 tmp"
+title: "Android Package Manager #04 PackageParser"
 date: 2019-07-18 20:00:00
 author: Sihyeon Kim
 categories: android-packagemanager
@@ -15,6 +15,7 @@ categories: android-packagemanager
 
 - permission은 App manifest file 안에 포함된다.  
 - 다음과 같은 형태이다.  
+
 ```
 <permission android:description="string resource"
             android:icon="drawable resource"
@@ -24,16 +25,16 @@ categories: android-packagemanager
             android:protectionLevel=["normal" | "dangerous" |
                                      "signature" | ...] />
 ```  
-- 해당 어플 혹은 다른 어플의 구성요소에 대한 접근을 제한하는 security permission을 선언한다. 
 
-- private Permission parsePermission(Package owner, Resources res, XmlPullParser parser, AttributeSet attrs, String[] outError) 
+- 해당 어플 혹은 다른 어플의 구성요소에 대한 접근을 제한하는 security permission을 선언한다.  
+- private Permission parsePermission(Package owner, Resources res, XmlPullParser parser, AttributeSet attrs, String[] outError)  
     - 매개변수  
         - Package owner  
         - Resources res  
         - XmlPullParser parser  
         - AttributeSet attrs  
         - String[] outError   
-    - 반환값
+    - 반환값  
         - Permission 객체  
         
 - Permission 객체 생성  
@@ -46,21 +47,21 @@ categories: android-packagemanager
   - 위 메소드는 반복문을 통해 모든 meta-data를 검색하고 실제 파싱은 parseMetaData에서 일어난다 [#3935](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/core/java/android/content/pm/PackageParser.java#3935)  
 
 ### private PermissionGroup parsePermissionGroup() [#2177](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/core/java/android/content/pm/PackageParser.java#2177)
-- <permission-group>은 manifest 파일에서 아래와 같은 형태이다  
-            
+- <permission-group>은 manifest 파일에서 아래와 같은 형태이다   
+
 ```
 <permission-group android:description="string resource"
                   android:icon="drawable resource"
                   android:label="string resource"
                   android:name="string" />            
-```
-- 관련된 permission의 그룹에 대한 이름을 선언한다  
+```  
+
+- 관련된 permission의 그룹에 대한 이름을 선언한다   
 - 마찬가지로 parsePackageItemInfo()와 parseAllMetaData()를 호출한다  
 - 호출할 때 String tag 매개변수 값만 바뀐다  
 
-
 ### private Permission parserPermissionTree() [#2291](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/core/java/android/content/pm/PackageParser.java#2291)
-- <permission-tree>는 manifest 파일에서 아래와 같은 형태이다  
+- <permission-tree>는 manifest 파일에서 아래와 같은 형태이다   
 
 ```
 <permission-tree android:icon="drawable resource"
@@ -68,17 +69,17 @@ categories: android-packagemanager
                  android:name="string" />
 ```
 
-- permissiont tree의 base name을 선언한다  
-- 어플은 tree에 있는 모든 name에 대한 ownership을 가진다  
-- 마찬가지로 parsePackageItemInfo()와 parseAllMetaData()를 호출한다  
-- 호출할 때 String tag 매개변수 값만 바뀐다  
+- permissiont tree의 base name을 선언한다   
+- 어플은 tree에 있는 모든 name에 대한 ownership을 가진다   
+- 마찬가지로 parsePackageItemInfo()와 parseAllMetaData()를 호출한다   
+- 호출할 때 String tag 매개변수 값만 바뀐다   
 
 ---  
 ---  
 ---  
 
 
-- public void recycle() [#1019 TypedArray.java](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/core/java/android/content/res/TypedArray.java#1019)
+- public void recycle() [#1019 TypedArray.java](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/core/java/android/content/res/TypedArray.java#1019)  
 
 - [#4663 public final static class Permission extends Component](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-6.0.1_r77/core/java/android/content/pm/PackageParser.java#4663)  
 
@@ -87,4 +88,4 @@ categories: android-packagemanager
 ---  
 
 ### 참고자료  
-1. [Developers Android](https://developer.android.com/guide/topics/manifest/permission-tree-element)
+1. [Developers Android](https://developer.android.com/guide/topics/manifest/permission-tree-element)  
