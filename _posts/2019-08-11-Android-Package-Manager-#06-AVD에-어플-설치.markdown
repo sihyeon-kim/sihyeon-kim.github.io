@@ -20,7 +20,7 @@ categories: android-packagemanager
 ![result](/assets/avd-data-app-test.png)  
 
 - 방법  
-1. *< aosp root >/packages/apps/<your app folder>*  
+1. *< aosp root >/packages/apps/< your app folder >*  
   위와 같은 경로가 되도록 */packages/apps/*에 폴더 생성  
 2. 위에서 생성한 폴더 안에 *< yourapp.apk >* 와 *Android.mk* 파일을 만든다.  
   apk 파일은 안드로이드 스튜디오를 통해 만들 수 있다.  
