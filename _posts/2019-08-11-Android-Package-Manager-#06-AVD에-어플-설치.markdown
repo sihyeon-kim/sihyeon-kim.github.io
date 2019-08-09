@@ -1,13 +1,13 @@
 ---
 layout: post
-title: "Android Package Manager #06 AVD"
+title: "Android Package Manager #06 AVD에 어플 설치"
 date: 2019-08-11 20:00:00
 author: Sihyeon Kim
 categories: android-packagemanager
 ---
 
 # AVD에 어플 설치하기  
-- Ubuntu 16.04, Android 6.0.1_r77, emulator  
+- 환경: Ubuntu 16.04, Android 6.0.1_r77, emulator  
 - 참고자료: [AOSP AVD에 앱 설치 - stackoverflow](https://stackoverflow.com/questions/10579827/how-do-i-add-apks-in-an-aosp-build), [APK 설치](https://bottlecok.tistory.com/100)  
 - 결과  
   - 안드로이드 앱을 APK로 만들어 AVD에 설치 가능  
