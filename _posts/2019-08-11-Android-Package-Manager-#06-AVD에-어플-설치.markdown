@@ -20,9 +20,9 @@ categories: android-packagemanager
 ![result](/assets/avd-data-app-test.png)  
 
 - 방법  
-1. *<aosp root>/packages/apps/<your app folder>*  
+1. *< aosp root >/packages/apps/<your app folder>*  
   위와 같은 경로가 되도록 */packages/apps/*에 폴더 생성  
-2. 위에서 생성한 폴더 안에 *<yourapp.apk>* 와 *Android.mk* 파일을 만든다.  
+2. 위에서 생성한 폴더 안에 *< yourapp.apk >* 와 *Android.mk* 파일을 만든다.  
   apk 파일은 안드로이드 스튜디오를 통해 만들 수 있다.  
 3. *Android.mk* 파일은 다음을 포함한다.  
 
@@ -46,7 +46,7 @@ LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
 include $(BUILD_PREBUILT)
 ```  
 
-4. *<aosp root>/build/target/product/core.mk*에 다음을 포함한다.  
+4. *< aosp root >/build/target/product/core.mk*에 다음을 포함한다.  
   
 ```
 PRODUCT_PACKAGES += < what you have defined in LOCAL_MODULE, it should be your app folder name >
