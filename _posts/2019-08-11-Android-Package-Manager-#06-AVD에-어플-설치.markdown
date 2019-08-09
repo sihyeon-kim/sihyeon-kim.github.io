@@ -51,3 +51,5 @@ include $(BUILD_PREBUILT)
 ```
 PRODUCT_PACKAGES += < what you have defined in LOCAL_MODULE, it should be your app folder name >
 ```
+
+5. 다시 make하고 실행한다.  
