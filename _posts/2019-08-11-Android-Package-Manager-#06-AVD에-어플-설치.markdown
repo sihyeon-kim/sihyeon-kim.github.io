@@ -25,27 +25,27 @@ categories: android-packagemanager
 2. 위에서 생성한 폴더 안에 *< yourapp.apk >* 와 *Android.mk* 파일을 만든다.  
   apk 파일은 안드로이드 스튜디오를 통해 만들 수 있다.  
 3. *Android.mk* 파일은 다음을 포함한다.  
-  ```
-  LOCAL_PATH := $(call my-dir)
+```
+LOCAL_PATH := $(call my-dir)
 
-  include $(CLEAR_VARS)
+include $(CLEAR_VARS)
 
-  LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_TAGS := optional
 
-  LOCAL_MODULE := < your app folder name >
+LOCAL_MODULE := < your app folder name >
 
-  LOCAL_CERTIFICATE := < desired key >
+LOCAL_CERTIFICATE := < desired key >
 
-  LOCAL_SRC_FILES := < app apk filename >
+LOCAL_SRC_FILES := < app apk filename >
 
-  LOCAL_MODULE_CLASS := APPS
+LOCAL_MODULE_CLASS := APPS
 
-  LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
+LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
 
-  include $(BUILD_PREBUILT)
-  ```  
+include $(BUILD_PREBUILT)
+```  
 4. *< aosp root >/build/target/product/core.mk*에 다음을 포함한다.  
-  ```
-  PRODUCT_PACKAGES += < what you have defined in LOCAL_MODULE, it should be your app folder name >
-  ```
+```
+PRODUCT_PACKAGES += < what you have defined in LOCAL_MODULE, it should be your app folder name >
+```  
 5. 다시 make하고 실행한다.  
