@@ -20,6 +20,7 @@ categories: android-packagemanager
 ![result](/assets/avd-data-app-test.png)  
 
 - 방법([참고자료](https://stackoverflow.com/questions/10579827/how-do-i-add-apks-in-an-aosp-build))  
+
 (1) *< aosp root >/packages/apps/< your app folder >*  
   위와 같은 경로가 되도록 */packages/apps/*에 폴더 생성  
 
