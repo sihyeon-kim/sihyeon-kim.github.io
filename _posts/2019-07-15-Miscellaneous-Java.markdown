@@ -6,6 +6,8 @@ author: Sihyeon Kim
 categories: java
 ---
 
+[목차1](#)
+
 # static variables, static method  
 ## static 변수
 한 클래스의 모든 인스턴스가 공유하는 변수를 `static`으로 선언한다.  
