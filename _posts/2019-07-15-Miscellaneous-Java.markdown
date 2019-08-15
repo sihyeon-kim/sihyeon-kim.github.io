@@ -8,7 +8,7 @@ categories: java
 
 [목차1](#static-메소드)
 
-# static variables, static method  
+# [static variables, static method]()  
 ## static 변수
 한 클래스의 모든 인스턴스가 공유하는 변수를 `static`으로 선언한다.  
 `static` 변수 즉 클래스 변수는 클래스 이름 또는 인스턴스의 이름으로 접근 가능하다. 보통 클래스 변수에 접근하는지 인스턴스 변수에 접근하는지 구분하기 위해 클래스 변수에 접근할 때는 클래스 이름을 사용한다.   
