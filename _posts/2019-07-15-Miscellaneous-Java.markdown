@@ -6,7 +6,7 @@ author: Sihyeon Kim
 categories: java
 ---
 
-[목차1](#)
+[목차1](#static-메소드)
 
 # static variables, static method  
 ## static 변수
