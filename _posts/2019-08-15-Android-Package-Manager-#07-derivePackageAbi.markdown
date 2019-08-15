@@ -15,5 +15,6 @@ categories: android-packagemanager
 - API는 source code에서 접근 가능하며, 상대적으로 high-level, hardware-independent, human-readable 형식이다.  
 - ABI는 machine code에서 접근을 정의한다. low-level, hardware-dependeant 하다.  
 - 여러 개의 프로그래밍 언어를 혼합하여 사용할 때 처리한다. 보통은 운영체제, 컴파일러가 수행하며, 프로그래머가 작업을 하는 경우도 있다.  
+- ABI는 애플리케이션의 기계어 코드가 런타임 시 시스템과 상호작용하는 방식을 정의한다. 앱에서 사용할 각 CPU 아키텍처의 ABI를 지정해야한다. 디바이스마다 하드웨어 자원인 CPU가 다르므로 앱을 이용하기 위해 ABI가 필요하다.  
 
 ### .asec, Android secure encrypted file extension  
