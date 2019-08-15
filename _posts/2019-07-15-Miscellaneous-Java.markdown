@@ -8,7 +8,7 @@ categories: java
 
 [목차1](#static-메소드)
 
-# [static variables, static method]()  
+# [static variables, static method](#)  
 ## static 변수
 한 클래스의 모든 인스턴스가 공유하는 변수를 `static`으로 선언한다.  
 `static` 변수 즉 클래스 변수는 클래스 이름 또는 인스턴스의 이름으로 접근 가능하다. 보통 클래스 변수에 접근하는지 인스턴스 변수에 접근하는지 구분하기 위해 클래스 변수에 접근할 때는 클래스 이름을 사용한다.   
@@ -18,7 +18,7 @@ categories: java
 그리고 접근 제어자<sup>access specifier</sup>를 이용하는 경우가 많다. 이비 `static`과 더불어 `final`로 선언된 변수는 변경이 불가능하므로 외부에서 접근을 허용한다고 해서 문제가 되지 않는다.  
 혹은 외부 접근을 허용해서 상수 값이 프로그램상에서 하나문 존재할 수 있다는 의미로 사용할 수 있다.  
 
-## [static 메소드]()  
+## [static 메소드](#)  
 클래스의 모든 인스턴스는 `static` 메소드에 접근할 수 있다.  
 `static` 메소드는 클래스의 이름 또는 인스턴스의 이름으로 접근할 수 있다.  
 인스턴스 이름으로 static 메소드를 부르는 것은 좋은 습관이 아니다. eclipse에서 경고 메시지를 발생시킨다.  
