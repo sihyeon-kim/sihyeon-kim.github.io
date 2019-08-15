@@ -68,6 +68,15 @@ Hiding은 early-binding을 기반으로 한다. 즉 호출되거나 사용되는
 |Subclass Instance Method|Overrides|Generates a compile-time error|
 |Subclass Static Method|Generates a compile-time error|Hides|
 
+---
+
+# Early binding vs late binding
+
+---
+
+# Runtime vs Compile time
+
+---
 
 
 #### 참고 자료  
