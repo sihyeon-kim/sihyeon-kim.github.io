@@ -18,3 +18,6 @@ categories: android-packagemanager
 - ABI는 애플리케이션의 기계어 코드가 런타임 시 시스템과 상호작용하는 방식을 정의한다. 앱에서 사용할 각 CPU 아키텍처의 ABI를 지정해야한다. 디바이스마다 하드웨어 자원인 CPU가 다르므로 앱을 이용하기 위해 ABI가 필요하다.  
 
 ### .asec, Android secure encrypted file extension  
+
+### MultiArch (Multi-Architecture)  
+- 다수의 서로 다른 바이너리 타겟을 설치하고 실행하는 운영체제의 
