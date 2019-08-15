@@ -20,4 +20,11 @@ categories: android-packagemanager
 ### .asec, Android secure encrypted file extension  
 
 ### MultiArch (Multi-Architecture)  
-- 다수의 서로 다른 바이너리 타겟을 설치하고 실행하는 운영체제의 
+- 다수의 서로 다른 바이너리 타겟을 설치하고 실행하는 운영체제의 기능  
+
+### derivePackageAbi  
+- 주어진 경로에 있는 package의 ABI를 반환한다.  
+- 크게 package의 applicationInfo에 있는 MultiArch 지원 여부에 따라 조건문으로 동작한다.  
+- 주석 TODO 부분을 보면 ASEC apps은 다시 스캔할 필요가 없다고 나온다. 하지만 AVD에서는 system/app 디렉토리 상에만 앱이 설치돼 있어 직접적인 영향이 없다. 더 알아보아야 할 부분이다.  
+
+
