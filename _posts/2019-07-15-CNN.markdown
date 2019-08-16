@@ -1,0 +1,75 @@
+---
+layout: post
+title: "Miscellaneous Java"
+date: 2019-07-15 20:01:00
+author: Sihyeon Kim
+categories: deep-learning
+---
+
+CNN  
+Convolutional Neural Network  
+Convolution 구조를 활용한 뉴럴 네트워크이다.  
+
+구조를 살펴보자. 입력 이미지에 콘볼루션 연산을 한다. 그 결과 콘볼루셔널 피쳐 맵이 나온다.  
+콘볼루션을 한 결과를 콘볼루셔널 피쳐 맵이라 부른다.  
+그 다음 서브 샘플링을 한다.  
+이미지 안에서 더 작은 영역을 얻는 것이 서브 샘플링이다. 이는 spatial information이 줄어드는 것이라 볼 수 있다.  
+Convolution + Subsampling + Full Connection이 CNN의 모든 것이다.  
+Full Connection은 Fully-connected layer 혹은 dense layer라고도 불린다.  
+
+CNN은 기본적으로 콘볼루션과 서브 샘플링이 반복되다가 끝에 풀 커넥션이 나온다.  
+콘볼루션과 서브 샘플링은 feature extraction을 해준다.  
+이미지를 그 자체로 보는 것이 아니라 특정한 특징을 통해 이미지를 구분한다.  
+결과적으로 특징들의 정보를 얻어 이를 가진 것이 무엇인지 알아야 한다.  
+이렇게 분류하는 것을 fully connected layer가 해준다.  
+pooling은 subsampling의 일종이다.  
+
+CNN은 왜 잘될까?  
+
+(1) Local invariance  
+국소적으로 차이가 없다.  
+동일한 convolution filter가 전체 이미지를 돌아다니므로<sup>sliding</sup> 찾고 싶은 물체가 어디에 있는지는 중요하지 않다.  
+예를 들어 100x100 이미지가 있다고 가정하자.  
+이미지의 가운데 물체가 있다고 가정하자. 그리고 또 다른 이미지는 가운데에서 약간 벗어난 곳에 물체가 있다.  
+이때 두 이미지는 완전히 달라지지만 콘볼루션을 이용하면 두 이미지의 차이는 줄어든다.  
+
+(2) Compositionality  
+CNN은 계층구조를 이룬다.  
+
+결국 콘볼루션은 convolutional filter의 모양과 연산을 하는 위치의 이미지 픽셀 값이 얼마나 비슷한지 나타낸다.  
+즉 filter와 비슷할 수록 높은 값을 나타낸다.  
+그리고 주어진 데이터를 이용해서 학습하여 filter 값을 계산한다. 어떤 필터 모양을 가지고 있을때 가장 높은 성능을 내는지 조사한다.  
+
+Zero-padding: 이미지의 가장자리에서도 콘볼루션을 가능하게 만든다.  
+필터와 출력 패딩, 입력 사이의 관계식  
+$$n_{out} = (n_{in} + 2 \times n_{padding} - n_{filter}) + 1$$  
+
+Stride: 필터가 픽세를 한 칸씩 건너뛰는지 두 칸씩 건너 뛰는지를 나타낸다.  
+stride size와 filter 사이즈가 같으면 overlapping이 없다.  
+
+`tf.nn.conv2d(input, filter, strides, padding, use_cudnn_on_gpu=None, name=None)`  
+
+filter는 4 dimensional tensor 이다.  
+input tensor of shape [batch, in_height, in_width, in_chnnel]  
+a filter/kernel tensor of shape [filter_height, filter_width, in_channels, out_channels]  
+
+RGB 이미지라면 in_chnnel은 3이다.  
+batch size만큼 학습을 진행한다. 몇 장의 이미지를 학습하는지 의미한다.  
+입력 이미지의 채널과 동일한 depth를 갖는 필터를 사용한다.  
+4x4x3 이미지에 3x3x3 필터로 콘볼루션을 하면 4x4x1 하나가 출력된다.  
+서로 다른 모양을 갖는 콘볼루션 필터 여러 개를 만들어 출력이 4x4xn 으로 n개의 channel을 갖도록 만든다.  
+
+파라미터의 수는 딥 러닝에서 중요한 의미를 갖는다. 파라미터의 수는 적으면 적을수록 좋다.  
+파라미터의 수를 줄이면서 레이어를 많이 쌓는 것이 중요하다.  
+
+bias를 더해 즉 각 채널에 대해 숫자 하나씩을 더한다.  
+그 다음 activation function을 통과시킨다.  
+하나의 콘볼루션은 convolution, bias add, activation function 세 개로 이루어진다.  
+그 다음 max pooling이라는 subsampling이 이루어진다.  
+fully connected layer에서는 m 차원 벡터를 n 차원 벡터로 바꿔준다. 이를 위해 m x n 행렬을 만들어 n 짜리 bias를 더해 레이어를 구성한다.  
+콘볼루션을 구성하는 파라미터의 수가 full connection 보다 훨씬 줄어든다.  
+따라서 최근에 fully connected layer를 없애는 fully convolutional network 구조를 하거나 뒷 단의 fully connected layer를 간소화시키고자 한다.  
+
+
+
+
