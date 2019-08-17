@@ -83,6 +83,41 @@ unsupervised learning can provide useful cues for how to group examples in repre
 CNN에서 feature extraction이 일종의 representation을 찾는 것이다.  
 이미지에서 유용한 feature를 찾는 representation이다.  
 
+(5) multi-task learning  
+한 번에 수학문제도 풀고 과학문제도 풀고,  
+한 번에 나이와 성별을 예측한다.   
+shared 구조에서 찾아진다. 앞단에 있는 shared 부분에서 representaion을 찾을 수 있다.  
+멀티 태스크 러닝을 하면 각각을 학습할 때 보다 성능이 좋아진다.  
+
+문장 하나를 줘서 번역도 하고, 감정 분석도 한다.  
+
+(6) early stopping  
+
+(7) parameter tying and parameter sharing  
+궁극적으로 파라미터 수를 줄이는 역할을 한다.  
+파라미터 sharing의 대표적인 예가 CNN이다.  
+
+(8) sparse representation  
+어떤 아웃풋의 대부분이 0이 되길 원함.  
+sparse weight: 웨이트 앞단의 행렬에 0이 많은 것  
+sparse activation: 뒷 단의 activation에 0이 많은 것  
+ReLU가 sparse activation이다.  
+
+(9) bagging and other ensemble methods  
+bias가 높다: 틀린 것, 안좋은 모델  
+variance가 높다: 흩어져 있다.  
+
+High variance를 low variance로 만드는 것: bagging, 평균을 내서 취합한다.  
+boosting: high bias에서 low bias로,  
+
+(10) dropout  
+
+(11) adversarial training  
+입력에 사람이 볼 수 없을 정도로 아주 작은 노이즈를 줄 때 아웃풋의 클래스가 완전히 변한다.  
+adversarial examples이 존재한다 -> deep learning model의 기울기가 가파르다.  
+기울기가 가파른 것은 우리가 얻고 싶은 성질은 아니다.  
+
+
 
 
 
