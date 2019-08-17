@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Miscellaneous Java"
+title: "Convolutional Neural Network"
 date: 2019-07-16 20:01:00
 author: Sihyeon Kim
 categories: deep-learning
