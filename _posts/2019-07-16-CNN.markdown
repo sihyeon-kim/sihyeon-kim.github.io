@@ -70,6 +70,8 @@ fully connected layer에서는 m 차원 벡터를 n 차원 벡터로 바꿔준�
 콘볼루션을 구성하는 파라미터의 수가 full connection 보다 훨씬 줄어든다.  
 따라서 최근에 fully connected layer를 없애는 fully convolutional network 구조를 하거나 뒷 단의 fully connected layer를 간소화시키고자 한다.  
 
+### 참고자료  
 
+[1] [edwith](https://www.edwith.org/deeplearningchoi/joinLectures/10979)
 
 
