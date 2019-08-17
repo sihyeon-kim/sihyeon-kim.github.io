@@ -70,6 +70,98 @@ fully connected layer에서는 m 차원 벡터를 n 차원 벡터로 바꿔준�
 콘볼루션을 구성하는 파라미터의 수가 full connection 보다 훨씬 줄어든다.  
 따라서 최근에 fully connected layer를 없애는 fully convolutional network 구조를 하거나 뒷 단의 fully connected layer를 간소화시키고자 한다.  
 
+# AlexNet, VGG, GoogLeNet, ResNet
+layer 수가 많아지면 성능이 좋아질 여지가 높아진다.  
+
+## AlexNet  
+파라미터의 수는 몇 개인가? 파라미터의 수를 이해하는 것이 중요하다.    
+11x11x3x48에 48 개의 bias  
+layer가 두 부분으로 나누어져 있는 것은 GPU 메모리 때문이다.  
+두 번째에서 세 번째 레이어로 갈 때 concatenate 되어 x256이 된다.  
+
+여기서 ReLU가 나온다.  
+tanh 보다 수렴이 빨리 된다.  
+
+LRN, Local Response Normalization  
+Regularization 테크닉이다.  
+convolutional feature map에서 일정 부분만 높게 activation되게 만든다.  
+
+It implements a form of lateral inhibition inspired by real neurons.  
+사람 뇌에서 설제라 하나의 뉴런이 firing 되면 옆에 있는 뉴런을 firing 되지 않도록 한다.  
+feature map의 일정 부분만 높게 갖도록 만든다.  
+
+Regularization in AlexNet  
+- Data augmentation (label preserving transformation, 숫자에 적용하기 힘들다)  
+  - color variation: 각 rgb 채널에 특정 값을 더한다. 학습 데이터에서 허용할 수 있을 만큼 노이즈를 준다.  
+- Dropout  
+
+## VGG  
+간단한 구조이다.  
+16단 19단이 많이 쓰인다.  
+convolution의 stride는 1이고 3x3을 사용  
+
+## GoogLeNet  
+22 layers deep network  
+Inception Module을 이용한다.  
+2014년  
+
+다른 모양의 네트워크로 갈라진다.  
+그리고 이들을 concatenation한다.  
+
+filter concatenation: 필터를 채널방향으로 더한 것  
+
+Actual inception module  
+
+one by one convolution: 채널의 수를 중간에 한 번 줄였을 때 네트워크를 정의할 때 쓴 파라미터의 수가 줄어든다. 레이어가 하나 더 쓰였는데 파라미터의 수가 줄어 들었다는 사실이 중요하다.  
+이것이 왜 가능한가?  
+콘볼루션의 파라미터 수를 결정하는 것은 인풋과 아웃풋 채널이다. 콘볼루션 하는 곳의 채널이 줄어들면 파라미터가 줄어든다.    
+
+갈림길의 장점: 최종 입력단에서 입력 이미지에서 미치는 영역이 다양해져 다양한 결과가 나온다.  
+
+Inception v4는 최근에 구글에서 나온 모델이다.  
+동일한 receptive field를 얻으면서 파라미터 수를 줄이기 위해 노력했다.  
+왜 잘되는 지는 알 수 없다. 해봤더니 잘 됬다.  
+
+### ResNet  
+파라미터를 줄이기 위한 Bottle architecture를 이용  
+residual connection을 사용
+152개 layers  
+
+네트워크가 deep한게 항상 좋은가? no  
+vanishing gradient, exploding gradients 때문이다.  
+better initialization methods, batch normalization, ReLU를 이용해 위 문제는 덜 중요하다  
+overfitting은 나타나지 않냐?  
+degradation problem: more depth but lower performance  
+overfitting과 degradation의 차이?  
+overfitting: training accuracy는 좋아지지만 test accuracy가 줄어들때, training data에 너무 맞출 때  
+degradation: training과 testing이 잘 되지만 성능이 안 나올때  
+
+입력을 출력에 더한다.(입력과 출력의 dimension이 같아야한다.)  
+입력과 deserved output 사이의 나머지만 학습한다.  
+
+Why residual?
+We hypothesize that it is easier to optimize the residual mapping than to optimize the original, unreferenced mapping.  
+shortcut connections are used  
+the extremely deep residual nets are easy to optimize  
+수학적 백그라운드가 있는 것이 아니라 해보았더니 잘 되었다.  
+
+가장 큰 단점은 입력과 출력의 dimension이 같아야 한다.  
+
+deeper bottle architecture  
+one by one convolution으로 채널을 줄이고 convolution 하고 dimension increasement한다.  
+
+ResNet은 40단 정도에서 생기던 degradation 문제를 100단 정도로 미뤘지만 1000단 정도가 넘어가면 성능이 나오지 않는다.  
+
+
+참고 논문  
+ImageNet Classification with Deep Convolutional Neural Networks(2012)  
+Going Deeper with Convolutions(2015)  
+Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning(2016)  
+
+
+
+
+
 ### 참고자료  
 
 [1] [edwith](https://www.edwith.org/deeplearningchoi/joinLectures/10979)
