@@ -7,6 +7,6 @@ categories: android-packagemanager
 ---
 
 
-![memcpy]("/assets/memcpy-time.png")
+![memcpy](/assets/memcpy-time.png)
 
-![strlcpy]("/assets/strlcpy-time.png")
+![strlcpy](/assets/strlcpy-time.png)
