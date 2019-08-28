@@ -42,6 +42,10 @@ if( sizeof(localTmpFileName) != nativeLibPath.size()) {
 }
 ```
 
+![이미지](https://cdn.discordapp.com/attachments/563317164296372236/616265622783000579/memcpy1.JPG)
+
 변경 후 크기를 비교하는 조건문 부분에서 문제가 발생하여 fail error가 발생할 시 로그를 출력하고 반환하는 조건문 부분을 전부 삭제해 주었다. 변경 전에 에러를 출력하는 로그가 나오지 않았으므로 올바르게 동작한다고 가정한다.
 
-![이미지](https://cdn.discordapp.com/attachments/563317164296372236/616265649043537958/code.JPG)
+![이미지](https://cdn.discordapp.com/attachments/563317164296372236/616265649043537958/code.JPG)  
+
+코드 변경 후 PackageManagerService.java의 derivePackageAbi 메소드 실행 시간을 측정해 보았을 때 약 0.01초 정도의 성능 향상을 보였다.
