@@ -15,7 +15,7 @@ categories: android-packagemanager
 ### ScopedUtfChars
 
 [ScopedUtfChars.h](https://android.googlesource.com/platform/libnativehelper/+/idea133/include/nativehelper/ScopedUtfChars.h) 코드를 보면 `c_str()`의 반환 값 타입은 `char *`이다.  
-`char *`의 크기는 32bit CPU에서는 32 비트, 즉 4바이트이고, 64bit CPU에서는 64비트, 즉 8바이트이다. 따라서, 넥서스 5에서 `sizeof(---.c_str())`의 출력은 4이다.  
+`char *`의 크기는 32bit CPU에서는 32 비트, 즉 4바이트이고, 64bit CPU에서는 64비트, 즉 8바이트이다. 따라서, 넥서스 5에서 `sizeof(nativeLibPath.c_str())`의 출력은 4이다.  
 자료형의 크기에 관한 자세한 사항은 [이 블로그](https://sckllo7.tistory.com/entry/32bit%EC%99%80-64bit%EC%9D%98-C-%EC%9E%90%EB%A3%8C%ED%98%95Data-Type-%ED%81%AC%EA%B8%B0-%EC%B0%A8%EC%9D%B4)를 참고하자.  
 
 ---
@@ -30,7 +30,8 @@ categories: android-packagemanager
 
 ### strlcpy
 
-[strlcpy.c](https://android.googlesource.com/platform/system/core/+/refs/tags/android-6.0.1_r81/libcutils/strlcpy.c) 코드  
+strlcpy는 c 표준 라이브러리에 포함되어 있지 않다. 코드는 다음 링크 [strlcpy.c](https://android.googlesource.com/platform/system/core/+/refs/tags/android-6.0.1_r81/libcutils/strlcpy.c)를 참고하자.  
+l은 length를 의미한다.  
 
 ```
 /*
@@ -41,10 +42,34 @@ categories: android-packagemanager
 size_t
 strlcpy(char *dst, const char *src, size_t siz)
 ```
+src에서 dst로 siz-1개의 문자열을 복사한다.  
+그리고 siz번째에 null을 붙인다.  
+반환 값은 생성하려고 한 문자열의 길이, 즉 src의 길이이다. 이때 길이는 null을 포함하지 않는다.  
+예를 들어 char * src = '123'이라면, siz가 1이든 2이든 상관 없이 반환 값은 3이다. null을 포함한 문자열 길이인 4를 반환하는 것은 아니다.  
+
+다음 실행 결과들을 참고하자.  
+![pic](/assets/images/0902-01.png)  
+![pic](/assets/images/0902-02.png)
+
+---
+
+### strncpy
+
+```
+char* strncpy(char* destination, const char* source, size_t num)
+```
+source에서 destination으로 num개의 문자열을 복사한다.  
+destination끝에 항상 null이 붙는 것이 아니다.
+반환 값은 destination이다.  
 
 ---
 
 ### memcpy
+
+```
+void* memcpy( void* dest, const void* src, std::size_t count );
+```
+반환 값은 dest이다.  
 
 ---
 
