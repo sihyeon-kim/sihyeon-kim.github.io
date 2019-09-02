@@ -11,14 +11,13 @@ categories: android-packagemanager
 `sizeof`는 바이트 형식으로 반환한다. C++에서 `char`의 크기는 1바이트이다. 따라서 문자열 길이로 생각해도 된다.  
 
 ---
----
 
 ### ScopedUtfChars
 
 [ScopedUtfChars.h](https://android.googlesource.com/platform/libnativehelper/+/idea133/include/nativehelper/ScopedUtfChars.h) 코드를 보면 `c_str()`의 반환 값 타입은 `char *`이다.  
 `char *`의 크기는 32bit CPU에서는 32 비트, 즉 4바이트이고, 64bit CPU에서는 64비트, 즉 8바이트이다. 따라서, 넥서스 5에서 `sizeof(---.c_str())`의 출력은 4이다.  
+자세한 사항은 [이 블로그](https://sckllo7.tistory.com/entry/32bit%EC%99%80-64bit%EC%9D%98-C-%EC%9E%90%EB%A3%8C%ED%98%95Data-Type-%ED%81%AC%EA%B8%B0-%EC%B0%A8%EC%9D%B4)를 참고하자.  
 
----
 ---
 
 ### 포인터
@@ -27,7 +26,6 @@ categories: android-packagemanager
 *(localFileName + nativeLibPath.size()) = '/';
 ```
 
----
 ---
 
 ### strlcpy
@@ -45,11 +43,9 @@ strlcpy(char *dst, const char *src, size_t siz)
 ```
 
 ---
----
 
 ### memcpy
 
----
 ---
 
 ### C++ 배열 크기 할당: 런타임 vs 컴파일타임  
