@@ -16,7 +16,7 @@ categories: android-packagemanager
 ### ScopedUtfChars
 
 [ScopedUtfChars.h](https://android.googlesource.com/platform/libnativehelper/+/idea133/include/nativehelper/ScopedUtfChars.h) 코드를 보면 `c_str()`의 반환 값 타입은 `char *`이다.  
-`char *`의 크기는 32bit CPU에서는 32 비트, 즉 4바이트이고, 64bit CPU에서는 64비트, 즉 8바이트이다. 따라서, 넥서스 5에서 `sizeof(---.c_str())`의 출력인 4이다.  
+`char *`의 크기는 32bit CPU에서는 32 비트, 즉 4바이트이고, 64bit CPU에서는 64비트, 즉 8바이트이다. 따라서, 넥서스 5에서 `sizeof(---.c_str())`의 출력은 4이다.  
 
 ---
 ---
