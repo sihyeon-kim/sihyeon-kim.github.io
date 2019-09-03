@@ -73,6 +73,16 @@ destination끝에 항상 null이 붙는 것이 아니다.
 void* memcpy( void* dest, const void* src, std::size_t count );
 ```
 반환 값은 dest이다.  
+반환 값 타입은 `void *`이다.  
+`(char *)`로 casting하면 dest 문자열이 나온다.  
+
+![ㅁ](/assets/0902-05.png)
+
+##### strlcpy와 memcpy 비교 
+
+![ㅁ](/assets/0902-03.png)  
+
+![ㅁ](/assets/0902-04.png)  
 
 ---
 
