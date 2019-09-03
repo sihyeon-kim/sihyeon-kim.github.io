@@ -76,7 +76,9 @@ void* memcpy( void* dest, const void* src, std::size_t count );
 반환 값 타입은 `void *`이다.  
 `(char *)`로 casting하면 dest 문자열이 나온다.  
 
-![ㅁ](/assets/0902-05.png)
+![ㅁ](/assets/0902-05.png)  
+
+---
 
 ##### strlcpy와 memcpy 비교 
 
@@ -88,10 +90,20 @@ void* memcpy( void* dest, const void* src, std::size_t count );
 
 ### C++ 배열 크기 할당: 런타임 vs 컴파일타임  
 
+C99에서만 VLA(variable length array)는 표준이었다.
+
+>> GCC in particular allows, by default, a lot of non-standard stuff that was historically accepted by old C compilers. They like "compatibility" in that sense.  
+
 
 [variable-length-array-vla-in-c-compilers](https://stackoverflow.com/questions/39334435/variable-length-array-vla-in-c-compilers)  
 
 [array-size-at-run-time-without-dynamic-allocation-is-allowed](https://stackoverflow.com/questions/737240/array-size-at-run-time-without-dynamic-allocation-is-allowed)  
+
+---
+
+[why-are-strlcpy-and-strlcat-considered-insecure](https://stackoverflow.com/questions/2114896/why-are-strlcpy-and-strlcat-considered-insecure)  
+
+[strncpy-or-strlcpy-in-my-case](https://stackoverflow.com/questions/6987217/strncpy-or-strlcpy-in-my-case)  
 
 ---
 
