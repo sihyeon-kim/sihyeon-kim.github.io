@@ -34,6 +34,18 @@ glibc의 memcpy.c 소스코드: [memcpy.c](https://github.molgen.mpg.de/git-mirr
 
 glibc와 AOSP에 있는 memcpy.c 소스코드 구현이 다르다.  
 
+### glibc에 있는 memcpy.c 소스코드 보기  
+
+함수 반환형과 이름 사이에 있는 inhibit_loop_to_libcall, 변수 자료형과 이름 사이에 있는 `__restrict`에 대해서는 아래의 참고자료 보기.  
+attribute라 부른다.  
+컴파일러가 최적화하도록 어떤 것을 설정하는 기능을 한다.   
+여기서는 macro로 attribute이 정의되어 있는 듯하다.  
+
+#### 참고자료
+[attribute-syntax](https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Attribute-Syntax.html#Attribute-Syntax)  
+[function-attribute](https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html)  
+
+
 
 
 
