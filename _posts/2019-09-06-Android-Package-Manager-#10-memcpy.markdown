@@ -94,10 +94,21 @@ src를 8바이트 포인터로 바꿔주고,
 <span style="color:red">cache-line-aligned???????????????</span>  
 [stackoverflow-cacheline-aligned](https://stackoverflow.com/questions/39971639/what-does-cacheline-aligned-mean)  
 <br>
+165-212줄,  
+n이 chip line size보다 크면 8바이트 단위로 tmp에 저장한 뒤 dst에 옮겨준다.  
+그리고 n을 64씩 줄여가며 진행  
+<br>
 200번째 줄,  
 write hint instruction (WH)  
 [write-hint](https://www.coursehero.com/file/pksdf5/Instruction-Descriptions-I-4143-41110-Write-Hint-Format-WH64-Rbab-Misc-format/)  
-
+218번째 줄에서, 
+나머지 부분 복사한 뒤 222번째 줄에서 반환  
+<br>
+228번째 줄부터,  
+위에서 복사를 다 못하고, 남아있는 경우 이 줄부터 진행  
+n < 8으로 남는 경우에 진행  
+big endian, little endian 나눠서 진행...  
+<br>
 
 
 
