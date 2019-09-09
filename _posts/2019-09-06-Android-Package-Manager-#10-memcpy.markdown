@@ -93,7 +93,10 @@ alignment는 machine이 access할 수 있는 block size.
 src를 8바이트 포인터로 바꿔주고,  
 <span style="color:red">cache-line-aligned???????????????</span>  
 [stackoverflow-cacheline-aligned](https://stackoverflow.com/questions/39971639/what-does-cacheline-aligned-mean)  
-
+<br>
+200번째 줄,  
+write hint instruction (WH)  
+[write-hint](https://www.coursehero.com/file/pksdf5/Instruction-Descriptions-I-4143-41110-Write-Hint-Format-WH64-Rbab-Misc-format/)  
 
 
 
