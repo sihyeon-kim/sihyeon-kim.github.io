@@ -59,7 +59,9 @@ attribute라 부른다.
 <span style="color:red;">왜 있는거지?</span>  
 char 개수가 16개보다 작으면 그대로 복사하고 반환한다.  
 char는 자료형 크기가 1byte이고 16개가 있으면 128bit.  
-<br>
+
+<br>  
+
 48~57번째 줄,  
 48줄: src1의 끝 위치 찾는다.  
 프로세서는 cache line을 거쳐 data를 cache로 가져온다.  
