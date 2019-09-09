@@ -72,6 +72,30 @@ cache line은 크기는 프로세서마다 다르며 16~128바이트이다. 보�
 <br>
 60번째 줄,  
 `uintptr_t`은 포인터 타입이다.  
+[관련 스택오버플로우-uintptr](https://stackoverflow.com/questions/1845482/what-is-uintptr-t-data-type)   
+<span style="color:red">word-aligned???????????????</span>  
+[stackoverflow-word-alignmnet](https://stackoverflow.com/questions/1584267/understanding-word-alignment)  
+[quora-word-alignment](https://www.quora.com/What-is-word-Alignment)  
+alignment는 machine이 access할 수 있는 block size.  
+예를 들어, word가 32bit인 machine에서, instruction이 16bit일때,  
+하나의 word씩 읽어 instruction을 실행하면, 두 개의 16bit instruction이 실행되어 에러발생한다.  
+그래서 word-alignment해야한다.  
+<br>
+`op_t`가 8바이트(64bit, 1word)이니깐, bit and해서 null이 아니면 반복문 돌리면서, src를 dst에 복사하는데 word-aligned되어 복사된다.<span style="color:red">???????????</span>    
+<br>
+66번째 줄부터,  
+`__builtin_expect`: branch prediction cache에 영향을 주어 성능 최적화, thrashing 줄인다.  
+[스택오버플로우](https://stackoverflow.com/questions/7346929/what-is-the-advantage-of-gccs-builtin-expect-in-if-else-statements)  
+두 번째 인자가 0이면, unlikely이고, else가 실행된다고 기대한다.  
+<br>  
+161번째 줄부터,  
+위의 66번째 줄의 else 문이다.  
+src를 8바이트 포인터로 바꿔주고,  
+<span style="color:red">cache-line-aligned???????????????</span>  
+[stackoverflow-cacheline-aligned](https://stackoverflow.com/questions/39971639/what-does-cacheline-aligned-mean)  
+
+
+
 
 
 
