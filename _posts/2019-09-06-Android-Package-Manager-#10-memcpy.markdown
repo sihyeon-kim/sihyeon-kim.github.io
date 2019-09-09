@@ -110,6 +110,55 @@ n < 8으로 남는 경우에 진행
 big endian, little endian 나눠서 진행...  
 <br>
 
+---
+
+```
+// memcpyTest.cpp: 콘솔 응용 프로그램의 진입점을 정의합니다.
+//
+
+#include "stdafx.h"
+
+void * memcpy(void * dst, void const * src, size_t len)
+{
+	long * plDst = (long *)dst;
+	long const * plSrc = (long const *)src;
+
+	if (!((uintptr_t)src & 0xFFFFFFFC) && !( (uintptr_t)dst & 0xFFFFFFFC))
+	{
+		while (len >= 4)
+		{
+			*plDst++ = *plSrc++;
+			len -= 4;
+		}
+	}
+
+	char * pcDst = (char *)plDst;
+	char const * pcSrc = (char const *)plSrc;
+	while (len--)
+	{
+		*pcDst++ = *pcSrc++;
+	}
+
+	return (dst);
+	}
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	char a[] = "abc";
+	char b[] = "def";
+
+	cout << (char *) memcpy(a, b, sizeof(a)) << endl;
+
+
+	printf("hello\n");
+    return 0;
+}
+```
+
+[memcpy 최적화 관련 블로그](https://hypermin.tistory.com/entry/%EC%BD%94%EB%93%9C-%EC%98%B5%ED%8B%B0%EB%A7%88%EC%9D%B4%EC%A6%88memcpy-source-optimize)   
 
 
 
