@@ -56,7 +56,7 @@ attribute라 부른다.
 `unsigned long int`는 64bit machine에서 8byte이다.  
 <br>
 39-44번째 줄,  
-<span style="color:red;">왜 있는거지?</span>  
+<span style="color:red">*왜 있는거지?*</span>  
 char 개수가 16개보다 작으면 그대로 복사하고 반환한다.  
 char는 자료형 크기가 1byte이고 16개가 있으면 128bit.  
 
