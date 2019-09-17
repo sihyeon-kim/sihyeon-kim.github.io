@@ -11,5 +11,5 @@ grep -n -r "strlcpy" *
 ```
 결과화면  
 
-[grep strlcpy 결과 텍스트](grep-strlcpy)  
+[grep strlcpy 결과 텍스트](/assets/grep-strlcpy)  
 
