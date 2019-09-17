@@ -16,4 +16,6 @@ grep -n -r "strlcpy" *
 strlcpy 호출하는 곳 많음..  
 
 
+[참고자료-](https://www.sudo.ws/todd/papers/strlcpy.html)  
+
 
