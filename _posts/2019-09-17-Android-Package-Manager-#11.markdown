@@ -9,7 +9,11 @@ categories: android-packagemanager
 ```
 grep -n -r "strlcpy" *
 ```
-결과화면  
+아래 결과화면 링크  
 
 [grep strlcpy 결과 텍스트](/assets/grep-strlcpy)  
+
+strlcpy 호출하는 곳 많음..  
+
+
 
