@@ -11,7 +11,7 @@ grep -n -r "strlcpy" *
 ```
 아래 결과화면 링크  
 
-[grep strlcpy 결과 텍스트](/assets/grep-strlcpy)  
+[grep strlcpy 결과 텍스트](https://github.com/sihyeon-kim/sihyeon-kim.github.io/blob/master/assets/grep-strlcpy)  
 
 strlcpy 호출하는 곳 많음..  
 
