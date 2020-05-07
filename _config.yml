@@ -28,7 +28,7 @@ markdown: kramdown
 paginate: 5
 paginate_path: "/page:num/"
 inter_post_navigation: false
-highlightjs_theme: "github-gist"
+highlightjs_theme: "atom-one-light"
 #highlightjs_theme: "github"
 #highlightjs_theme: "androidstudio"
 #highlightjs_theme: "monokai-sublime"
