@@ -1,0 +1,16 @@
+---
+layout: post
+title: "aosp commit"
+date: 2019-11-01 20:00:00
+author: Sihyeon Kim
+categories: android-packagemanager
+---
+
+{% highlight javascript %}
+function demo(string, times) {
+	for (var i = 0; i < times; i++) {
+		console.log(string);
+	}
+}
+demo("hello, world!", 10);
+{% endhighlight %}
